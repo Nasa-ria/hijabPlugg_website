@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Shipping Policy - Hijabis Plugg')
+@section('title', 'Shipping Policy - Nasaari Store')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100 py-16">
+<div class="min-h-screen bg-gradient-to-br from-cream-100 via-cream-50 to-cream-200 py-16">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="mb-12">
             <h1 class="section-heading">Shipping Policy</h1>
@@ -62,7 +62,7 @@
 
             <section>
                 <h2 class="text-xl font-semibold text-gray-900 mb-4">Contact Us</h2>
-                <p class="text-gray-600 text-sm leading-relaxed">Questions about shipping? Email us at <a href="mailto:support@hijabisplug.com" class="text-brand-600 hover:text-brand-700 font-medium">support@hijabisplug.com</a></p>
+                <p class="text-gray-600 text-sm leading-relaxed">Questions about shipping? Email us at <a href="mailto:support@nasaari.store" class="text-brand-600 hover:text-brand-700 font-medium">support@nasaari.store</a></p>
             </section>
         </div>
     </div>

@@ -1,0 +1,276 @@
+/* ═══════════════════════════════════════════════════════
+   STORY – Scroll-driven home page motion system
+   Behaviour lives in resources/js/story.js. Markup lives in
+   resources/views/welcome.blade.php + components/story/*.
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Tuning knobs: change timing and colours here ─────── */
+:root {
+    --story-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --story-reveal: 1000ms;      /* fade + rise reveals */
+    --story-curtain: 1200ms;     /* image curtain reveals */
+    --story-hover: 260ms;        /* card lift, button sweeps */
+    --story-stagger: 110ms;      /* delay between siblings (multiplied by --i) */
+    --story-rise: 24px;          /* how far reveals travel */
+
+    /* Chapter tones (match tailwind.config.js) */
+    --tone-ink: #3a1234;         /* brand-dark: dark plum */
+    --tone-plum: #46183b;        /* brand-800 */
+    --tone-cream: #faf4ef;       /* cream-100: porcelain */
+    --tone-sand: #f3e9e2;        /* cream-200 */
+}
+
+/* ── Stage: each chapter paints its own tone ──────────── */
+.story {
+    position: relative;
+    isolation: isolate;
+}
+[data-chapter="ink"]   { background: var(--tone-ink); }
+[data-chapter="plum"]  { background: radial-gradient(120% 80% at 15% 10%, #521f43 0%, var(--tone-plum) 60%); }
+[data-chapter="cream"] { background: var(--tone-cream); }
+[data-chapter="sand"]  { background: linear-gradient(180deg, var(--tone-cream) 0%, var(--tone-sand) 100%); }
+
+/* Curved edge between chapters: solid colours meeting in a soft arch,
+   so nothing muddy sits between them. See components/story/blend. */
+.story-blend {
+    position: relative;
+    height: clamp(56px, 9vw, 120px);
+    margin-top: -1px;
+}
+.story-blend svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Fine grain for a printed, tactile depth (static, very low cost) */
+[data-chapter]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── Headline: line-by-line mask reveal on page load ──── */
+.story-lines .line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.08em;   /* room for descenders inside the mask */
+}
+.story-lines .line > span {
+    display: block;
+    animation: story-line-rise 1100ms var(--story-ease) both;
+    animation-delay: calc(var(--i, 0) * 140ms + 120ms);
+}
+@keyframes story-line-rise {
+    from { transform: translate3d(0, 105%, 0); opacity: 0; filter: blur(6px); }
+    to   { transform: translate3d(0, 0, 0); opacity: 1; filter: blur(0); }
+}
+
+/* Load-time soft fade for hero copy beneath the headline */
+.story-onload {
+    animation: story-fade-rise var(--story-reveal) var(--story-ease) both;
+    animation-delay: calc(var(--i, 0) * var(--story-stagger) + 500ms);
+}
+@keyframes story-fade-rise {
+    from { opacity: 0; transform: translate3d(0, 12px, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* ── Scroll reveals (only hidden once JS is confirmed) ── */
+.story-js [data-reveal] {
+    opacity: 0;
+    transform: translate3d(0, var(--story-rise), 0);
+    transition:
+        opacity var(--story-reveal) var(--story-ease),
+        transform var(--story-reveal) var(--story-ease),
+        filter var(--story-reveal) var(--story-ease);
+    transition-delay: calc(var(--i, 0) * var(--story-stagger));
+}
+/* "soft" adds a blur-to-sharp focus pull, used sparingly on headings */
+.story-js [data-reveal="soft"] { filter: blur(8px); }
+.story-js [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+    filter: none;
+}
+
+/* ── Curtain: images open from the centre outwards ───── */
+.story-js [data-curtain] {
+    clip-path: inset(0 50% 0 50%);
+    transition: clip-path var(--story-curtain) var(--story-ease);
+    transition-delay: calc(var(--i, 0) * 160ms);
+}
+.story-js [data-curtain] img {
+    transform: scale(1.12);
+    transition: transform calc(var(--story-curtain) + 600ms) var(--story-ease);
+    transition-delay: calc(var(--i, 0) * 160ms);
+}
+.story-js [data-curtain].is-in { clip-path: inset(0 0 0 0); }
+.story-js [data-curtain].is-in img { transform: scale(1); }
+
+/* Hero image curtain plays on load, not on scroll */
+.story-curtain-load {
+    animation: story-curtain-open 1400ms var(--story-ease) 250ms both;
+}
+.story-curtain-load img {
+    animation: story-settle 2000ms var(--story-ease) 250ms both;
+}
+@keyframes story-curtain-open {
+    from { clip-path: inset(0 50% 0 50% round 2rem); }
+    to   { clip-path: inset(0 0 0 0 round 2rem); }
+}
+@keyframes story-settle {
+    from { transform: scale(1.12); }
+    to   { transform: scale(1); }
+}
+
+/* Parallax layers are moved by JS with transform only */
+[data-parallax] { will-change: transform; }
+
+/* ── The Thread: signature scroll-drawn line ──────────── */
+.story-thread {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+    overflow: visible;
+}
+.story-thread path {
+    fill: none;
+    stroke-width: 1.25;
+    stroke-linecap: round;
+}
+.story-thread .thread-glow {
+    stroke-width: 6;
+    opacity: 0.18;
+}
+.story-chapter-content { position: relative; z-index: 2; }
+
+/* Signature: "Nasaari" written in the logo script */
+.story-signature text {
+    font-family: 'Parisienne', cursive;
+    fill: #faf4ef;
+    fill-opacity: 0;
+    stroke: #faf4ef;
+    stroke-width: 0.8;
+    stroke-dasharray: 900;
+    stroke-dashoffset: 900;
+}
+.story-signature.is-signed text {
+    transition:
+        stroke-dashoffset 2600ms var(--story-ease),
+        fill-opacity 1400ms var(--story-ease) 1500ms;
+    stroke-dashoffset: 0;
+    fill-opacity: 1;
+}
+html:not(.story-js) .story-signature text { stroke-dashoffset: 0; fill-opacity: 1; }
+
+/* ── Micro-interactions ──────────────────────────────── */
+.story-card {
+    transition:
+        transform var(--story-hover) var(--story-ease),
+        box-shadow var(--story-hover) var(--story-ease);
+}
+.story-card:hover,
+.story-card:focus-within {
+    transform: translate3d(0, -6px, 0);
+    box-shadow: 0 24px 48px -24px rgba(58, 18, 52, 0.35);
+}
+.story-card .story-zoom img {
+    transition: transform 900ms var(--story-ease);
+}
+.story-card:hover .story-zoom img { transform: scale(1.04); }
+
+/* Underline that sweeps in from the left */
+.story-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 4px;
+}
+.story-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0.25);
+    transform-origin: left;
+    transition: transform var(--story-hover) var(--story-ease);
+}
+.story-link:hover::after,
+.story-link:focus-visible::after { transform: scaleX(1); }
+
+/* Button whose fill sweeps across on hover */
+.story-btn-outline {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+.story-btn-outline::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: currentColor;
+    opacity: 0.12;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--story-hover) var(--story-ease);
+}
+.story-btn-outline:hover::before,
+.story-btn-outline:focus-visible::before { transform: scaleX(1); }
+
+/* Keyboard focus stays clearly visible on every chapter tone */
+.story a:focus-visible,
+.story button:focus-visible,
+.story input:focus-visible {
+    outline: 2px solid #e0708a;
+    outline-offset: 3px;
+}
+
+/* ── Mobile: lighter effects for mid-range phones ─────── */
+@media (max-width: 767px) {
+    .story-thread { display: none; }
+    :root { --story-rise: 14px; }
+    .story-js [data-reveal="soft"] { filter: none; }
+}
+
+/* ── Reduced motion: calm, static, simple fades only ─── */
+@media (prefers-reduced-motion: reduce) {
+    .story-lines .line > span,
+    .story-onload,
+    .story-curtain-load,
+    .story-curtain-load img { animation: none !important; }
+
+    .story-js [data-reveal],
+    .story-js [data-reveal="soft"] {
+        transform: none;
+        filter: none;
+        transition: opacity 600ms ease;
+    }
+    .story-js [data-curtain] { clip-path: none; transition: none; }
+    .story-js [data-curtain] img { transform: none; transition: none; }
+    .story-signature text,
+    .story-signature.is-signed text {
+        stroke-dashoffset: 0;
+        fill-opacity: 1;
+        transition: none;
+    }
+    .story-card,
+    .story-card .story-zoom img { transition: none; }
+    .story-card:hover { transform: none; }
+    .story-card:hover .story-zoom img { transform: none; }
+}

@@ -1,13 +1,13 @@
 ﻿@extends('layouts.app')
 
-@section('title', 'Create Account – Hijabis Plugg')
+@section('title', 'Create Account – Nasaari Store')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100 py-16">
+<div class="min-h-screen bg-gradient-to-br from-cream-100 via-cream-50 to-cream-200 py-16">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] gap-10 items-center">
             <div class="space-y-6">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-50 text-brand-600 text-sm font-semibold shadow-sm shadow-brand-500/10">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cream-200 text-brand-700 text-sm font-semibold shadow-sm shadow-brand-500/10">
                     <i class="fas fa-user-plus text-xs"></i> Create your account
                 </div>
                 <div>

@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
-@section('title', 'Shopping Cart – Hijabis Plugg')
+@section('title', 'Shopping Cart – Nasaari Store')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
 
     {{-- Page Header --}}
     <div class="flex items-center gap-3 mb-8 animate-fade-in">
-        <span class="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center">
-            <i class="fas fa-shopping-bag text-brand-500"></i>
+        <span class="w-10 h-10 rounded-xl bg-accent-50 flex items-center justify-center">
+            <i class="fas fa-shopping-bag text-accent-500"></i>
         </span>
         <div>
             <h1 class="text-2xl font-bold text-gray-900">Shopping Cart</h1>
@@ -26,7 +26,7 @@
             ════════════════════════════════════════════ --}}
             <div class="lg:col-span-2 space-y-4">
                 @foreach($cart as $key => $item)
-                    <div class="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 flex gap-4 sm:gap-5 transition-all duration-200 hover:border-gray-200 stagger-item" id="cart-item-{{ $item['product_id'] }}">
+                    <div class="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 flex gap-4 sm:gap-5 transition-all duration-200 hover:border-gray-200 stagger-item" id="cart-item-{{ $key }}">
 
                         {{-- Product Image --}}
                         <a href="{{ route('products.show', $item['product_id']) }}" class="flex-shrink-0 w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden bg-gray-100 img-zoom">
@@ -38,16 +38,20 @@
                             <a href="{{ route('products.show', $item['product_id']) }}" class="font-semibold text-gray-800 hover:text-brand-600 transition-colors text-[15px] truncate">
                                 {{ $item['name'] }}
                             </a>
+                            @if(!empty($item['color_name']))
+                                <p class="text-xs text-gray-500 mt-0.5">Colour: {{ $item['color_name'] }}</p>
+                            @endif
                             <p class="text-sm text-brand-600 font-semibold mt-1">
-                                ₵{{ number_format($item['price'], 2) }} each
+                                @money($item['price']) each
                             </p>
 
                             {{-- Quantity & Remove (mobile-friendly layout) --}}
                             <div class="mt-auto pt-3 flex items-center justify-between gap-3">
                                 {{-- Quantity Selector --}}
-                                <form action="{{ route('cart.update') }}" method="POST" class="flex items-center rounded-xl border border-gray-200 bg-gray-50 overflow-hidden" id="qty-form-{{ $item['product_id'] }}">
+                                <form action="{{ route('cart.update') }}" method="POST" class="flex items-center rounded-xl border border-gray-200 bg-gray-50 overflow-hidden" id="qty-form-{{ $key }}">
                                     @csrf
                                     <input type="hidden" name="product_id" value="{{ $item['product_id'] }}">
+                                    <input type="hidden" name="key" value="{{ $key }}">
                                     <button type="submit" name="quantity" value="{{ $item['quantity'] - 1 }}" class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-brand-600 hover:bg-brand-50 transition-all {{ $item['quantity'] <= 1 ? 'opacity-40 pointer-events-none' : '' }}">
                                         <i class="fas fa-minus text-[10px]"></i>
                                     </button>
@@ -58,9 +62,10 @@
                                 </form>
 
                                 {{-- Remove --}}
-                                <form action="{{ route('cart.remove') }}" method="POST" id="remove-form-{{ $item['product_id'] }}">
+                                <form action="{{ route('cart.remove') }}" method="POST" id="remove-form-{{ $key }}">
                                     @csrf
                                     <input type="hidden" name="product_id" value="{{ $item['product_id'] }}">
+                                    <input type="hidden" name="key" value="{{ $key }}">
                                     <button type="submit" class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all" title="Remove item">
                                         <i class="fas fa-trash text-xs"></i>
                                     </button>
@@ -70,7 +75,7 @@
 
                         {{-- Line Total (desktop) --}}
                         <div class="hidden sm:flex flex-col items-end justify-between">
-                            <span class="text-lg font-bold text-gray-800">₵{{ number_format($item['price'] * $item['quantity'], 2) }}</span>
+                            <span class="text-lg font-bold text-gray-800">@money($item['price'] * $item['quantity'])</span>
                         </div>
                     </div>
                 @endforeach
@@ -97,24 +102,35 @@
                     <div class="space-y-3 mb-6">
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-500">Subtotal</span>
-                            <span class="font-medium text-gray-700">₵{{ number_format($subtotal, 2) }}</span>
+                            <span class="font-medium text-gray-700">@money($totals['subtotal'])</span>
                         </div>
-                        <div class="flex justify-between text-sm">
+                        <div class="flex justify-between gap-3 text-sm">
                             <span class="text-gray-500">Shipping</span>
-                            <span class="font-medium text-gray-700">₵{{ number_format($shipping, 2) }}</span>
+                            @if($domestic)
+                                <span class="font-medium text-emerald-700 text-right">Paid on delivery</span>
+                            @else
+                                <span class="font-medium text-gray-700 text-right">DHL rate at checkout</span>
+                            @endif
                         </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-500">Tax (5%)</span>
-                            <span class="font-medium text-gray-700">₵{{ number_format($tax, 2) }}</span>
-                        </div>
+                        @if($totals['tax'] > 0)
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Tax ({{ rtrim(rtrim(number_format($totals['tax_rate'] * 100, 2), '0'), '.') }}%)</span>
+                                <span class="font-medium text-gray-700">@money($totals['tax'])</span>
+                            </div>
+                        @endif
                     </div>
 
-                    <div class="border-t border-dashed border-gray-200 pt-4 mb-6">
+                    <div class="border-t border-dashed border-gray-200 pt-4 mb-4">
                         <div class="flex justify-between items-baseline">
-                            <span class="text-sm font-semibold text-gray-700">Total</span>
-                            <span class="text-2xl font-bold text-brand-600">₵{{ number_format($total, 2) }}</span>
+                            <span class="text-sm font-semibold text-gray-700">{{ $domestic ? 'Total' : 'Total before shipping' }}</span>
+                            <span class="text-2xl font-bold text-brand-600">@money($totals['total'])</span>
                         </div>
+                        @if($displayCurrency->isConverted())
+                            <p class="mt-1 text-right text-xs text-gray-400">Charged in Ghana Cedis: @ghs($totals['total'])</p>
+                        @endif
                     </div>
+
+                    <x-shop.shipping-notice :type="$domestic ? 'pod' : 'dhl'" class="mb-6" />
 
                     @auth
                         <a href="{{ route('checkout.index') }}" class="btn-brand w-full text-center" id="checkout-btn">
@@ -137,15 +153,15 @@
                     {{-- Trust signals --}}
                     <div class="mt-6 pt-5 border-t border-gray-100 space-y-2.5">
                         <div class="flex items-center gap-2.5 text-xs text-gray-400">
-                            <i class="fas fa-lock text-brand-400 w-3.5 text-center"></i>
+                            <i class="fas fa-lock text-accent-400 w-3.5 text-center"></i>
                             <span>SSL Encrypted Checkout</span>
                         </div>
                         <div class="flex items-center gap-2.5 text-xs text-gray-400">
-                            <i class="fas fa-shield-halved text-brand-400 w-3.5 text-center"></i>
+                            <i class="fas fa-shield-halved text-accent-400 w-3.5 text-center"></i>
                             <span>100% Purchase Protection</span>
                         </div>
                         <div class="flex items-center gap-2.5 text-xs text-gray-400">
-                            <i class="fas fa-rotate-left text-brand-400 w-3.5 text-center"></i>
+                            <i class="fas fa-rotate-left text-accent-400 w-3.5 text-center"></i>
                             <span>Hassle-Free Returns</span>
                         </div>
                     </div>
@@ -156,8 +172,8 @@
     @else
         {{-- Empty Cart State --}}
         <div class="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
-            <div class="w-28 h-28 rounded-3xl bg-brand-50 flex items-center justify-center mb-6 animate-float">
-                <i class="fas fa-shopping-bag text-4xl text-brand-300"></i>
+            <div class="w-28 h-28 rounded-3xl bg-accent-50 flex items-center justify-center mb-6 animate-float">
+                <i class="fas fa-shopping-bag text-4xl text-accent-300"></i>
             </div>
             <h2 class="text-xl font-bold text-gray-800 mb-2">Your cart is empty</h2>
             <p class="text-sm text-gray-400 mb-8 max-w-xs">Looks like you haven't added anything yet. Explore our collection and find something you love.</p>

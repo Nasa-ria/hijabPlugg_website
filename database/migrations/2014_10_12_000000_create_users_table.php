@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Also created by 0001_01_01_* (Laravel 11 defaults); skip when it already exists
+        if (Schema::hasTable('users')) {
+            return;
+        }
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -27,6 +32,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        // Dropped by the matching 0001_01_01_* migration
+
     }
 };

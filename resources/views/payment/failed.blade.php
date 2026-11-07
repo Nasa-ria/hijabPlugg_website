@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Payment Failed – Hijabis Plugg')
+@section('title', 'Payment Failed – Nasaari Store')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
@@ -32,7 +32,7 @@
                 </div>
                 <div class="flex justify-between pb-3 border-b border-gray-200">
                     <span class="text-sm text-gray-600">Amount</span>
-                    <span class="font-semibold text-gray-900">₵{{ number_format($order->total_amount, 2) }}</span>
+                    <span class="font-semibold text-gray-900">@orderMoney($order->total_amount)</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-sm text-gray-600">Status</span>
@@ -81,3 +81,4 @@
         </div>
     </div>
 </div>
+@endsection

@@ -3,19 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Hijabis Plugg – Your trusted online destination for premium modest fashion, hijabs, and accessories.">
-    <title>@yield('title', 'Hijabis Plugg – Premium Modest Fashion')</title>
+    <meta name="description" content="Nasaari Store – Your trusted online destination for premium modest fashion, hijabs, and accessories.">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Nasaari Store – Hijabs | Modesty & More')</title>
+    @if(file_exists(public_path('images/logo.png')))
+        <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    @endif
+    @stack('meta')
 
     {{-- Google Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;1,6..96,400;1,6..96,500&family=Parisienne&display=swap" rel="stylesheet">
 
     {{-- Font Awesome --}}
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
     {{-- Vite Assets --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Display currency for prices formatted in JavaScript (GHS stays the source of truth) --}}
+    <script>window.NasaariCurrency = @json(app(\App\Services\CurrencyService::class)->jsConfig());</script>
 </head>
 <body class="font-sans antialiased bg-brand-light text-gray-800 min-h-screen flex flex-col">
 
@@ -27,26 +35,28 @@
             <div class="flex items-center justify-between h-16 lg:h-[72px]">
 
                 {{-- Logo --}}
-                <a href="/" class="flex items-center gap-2.5 group" id="nav-logo">
-                    <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/25 group-hover:shadow-brand-500/40 transition-shadow duration-300">
-                        <i class="fas fa-leaf text-white text-sm"></i>
-                    </span>
-                    <span class="text-xl font-bold bg-gradient-to-r from-brand-700 to-brand-500 bg-clip-text text-transparent">
-                        Hijabis Plugg
-                    </span>
+                <a href="/" class="flex items-end gap-1.5 group" id="nav-logo" aria-label="Nasaari Store home">
+                    <span class="font-script text-[2.1rem] leading-none text-brand-dark group-hover:text-brand-700 transition-colors duration-300">Nasaari</span>
+                    <span class="mb-0.5 text-[11px] font-medium tracking-[0.2em] uppercase text-brand-600">Store</span>
                 </a>
 
                 {{-- Desktop Navigation Links --}}
                 <div class="hidden lg:flex items-center gap-1">
-                    <a href="/" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-brand-600 hover:bg-brand-50 transition-all duration-200" id="nav-home">
-                        Home
-                    </a>
-                    <a href="{{ route('products.index') }}" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-brand-600 hover:bg-brand-50 transition-all duration-200" id="nav-shop">
+                    <a href="{{ route('home') }}" class="px-4 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('home', 'products.*') ? 'text-brand-600 bg-brand-50' : 'text-gray-600' }} hover:text-brand-600 hover:bg-brand-50 transition-all duration-200" id="nav-shop">
                         Shop
+                    </a>
+                    <a href="{{ route('story') }}" class="px-4 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('story') ? 'text-brand-600 bg-brand-50' : 'text-gray-600' }} hover:text-brand-600 hover:bg-brand-50 transition-all duration-200" id="nav-story">
+                        Our story
+                    </a>
+                    <a href="{{ route('blog.index') }}" class="px-4 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('blog.*') ? 'text-brand-600 bg-brand-50' : 'text-gray-600' }} hover:text-brand-600 hover:bg-brand-50 transition-all duration-200" id="nav-blog">
+                        Blog
+                    </a>
+                    <a href="{{ route('pages.contact') }}" class="px-4 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('pages.contact') ? 'text-brand-600 bg-brand-50' : 'text-gray-600' }} hover:text-brand-600 hover:bg-brand-50 transition-all duration-200" id="nav-contact">
+                        Contact
                     </a>
                     @auth
                         @if(auth()->user()->isAdmin())
-                            <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 rounded-lg text-sm font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 transition-all duration-200" id="nav-admin">
+                            <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 rounded-lg text-sm font-medium text-accent-600 bg-accent-50 hover:bg-accent-100 transition-all duration-200" id="nav-admin">
                                 <i class="fas fa-shield-halved mr-1.5 text-xs"></i>Admin
                             </a>
                         @endif
@@ -56,21 +66,21 @@
                 {{-- Right side actions --}}
                 <div class="flex items-center gap-2 sm:gap-3">
 
+                    {{-- Display currency --}}
+                    <x-shop.currency-switcher id="nav-currency" class="hidden sm:flex" />
+
                     {{-- Cart Button --}}
                     <a href="{{ route('cart.index') }}" class="relative p-2.5 rounded-xl text-gray-500 hover:text-brand-600 hover:bg-brand-50 transition-all duration-200" id="nav-cart">
                         <i class="fas fa-shopping-bag text-lg"></i>
-                        @if(session('cart') && count(session('cart')) > 0)
-                            <span class="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg shadow-brand-500/30 animate-pulse">
-                                {{ count(session('cart')) }}
-                            </span>
-                        @endif
+                        @php $cartCount = count(session('cart', [])); @endphp
+                        <span id="nav-cart-count" class="bg-accent-500 absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg shadow-accent-500/30 {{ $cartCount ? '' : 'hidden' }}" aria-live="polite">{{ $cartCount ?: '' }}</span>
                     </a>
 
                     {{-- User Menu --}}
                     @auth
                         <div class="relative" x-data="{ open: false }">
                             <button onclick="toggleUserMenu()" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-gray-600 hover:text-brand-600 hover:bg-brand-50 transition-all duration-200" id="nav-user-menu">
-                                <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white text-xs font-bold shadow-md">
+                                <span class="bg-accent-500 w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold shadow-md">
                                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                 </span>
                                 <span class="hidden sm:inline">{{ auth()->user()->name }}</span>
@@ -97,10 +107,10 @@
                             </div>
                         </div>
                     @else
-                        <a href="{{ route('login') }}" class="px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:text-brand-600 hover:bg-brand-50 transition-all duration-200" id="nav-login">
+                        <a href="{{ route('login') }}" class="hidden sm:inline-flex px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap text-gray-600 hover:text-brand-600 hover:bg-brand-50 transition-all duration-200" id="nav-login">
                             Sign In
                         </a>
-                        <a href="{{ route('register') }}" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 shadow-lg shadow-brand-500/25 hover:shadow-brand-500/40 transition-all duration-300" id="nav-register">
+                        <a href="{{ route('register') }}" class="bg-accent-500 hover:bg-accent-600 hidden sm:inline-flex px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap text-white shadow-lg shadow-accent-500/25 hover:shadow-accent-500/40 transition-all duration-300" id="nav-register">
                             Get Started
                         </a>
                     @endauth
@@ -116,11 +126,21 @@
         {{-- Mobile Menu --}}
         <div id="mobileMenu" class="lg:hidden hidden border-t border-gray-100 bg-white/95 backdrop-blur-xl">
             <div class="max-w-7xl mx-auto px-4 py-4 space-y-1">
-                <a href="/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:text-brand-600 hover:bg-brand-50 transition-all font-medium">
-                    <i class="fas fa-home w-5 text-center text-gray-400"></i>Home
+                <div class="flex items-center justify-between px-4 py-2 sm:hidden">
+                    <span class="text-sm font-medium text-gray-500">Show prices in</span>
+                    <x-shop.currency-switcher id="mobile-currency" />
+                </div>
+                <a href="{{ route('story') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:text-brand-600 hover:bg-brand-50 transition-all font-medium">
+                    <i class="fas fa-feather w-5 text-center text-gray-400"></i>Our story
                 </a>
                 <a href="{{ route('products.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:text-brand-600 hover:bg-brand-50 transition-all font-medium">
                     <i class="fas fa-th-large w-5 text-center text-gray-400"></i>Shop
+                </a>
+                <a href="{{ route('blog.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:text-brand-600 hover:bg-brand-50 transition-all font-medium">
+                    <i class="fas fa-feather-pointed w-5 text-center text-gray-400"></i>Blog
+                </a>
+                <a href="{{ route('pages.contact') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:text-brand-600 hover:bg-brand-50 transition-all font-medium">
+                    <i class="fas fa-envelope w-5 text-center text-gray-400"></i>Contact
                 </a>
                 @auth
                     @if(auth()->user()->isAdmin())
@@ -133,6 +153,12 @@
                             <i class="fas fa-box w-5 text-center text-gray-400"></i>My Orders
                         </a>
                     @endif
+                @else
+                    {{-- On phones the sign-in links live here to keep the top bar uncluttered --}}
+                    <div class="sm:hidden grid grid-cols-2 gap-3 pt-3 mt-2 border-t border-gray-100">
+                        <a href="{{ route('login') }}" class="btn-secondary !py-2.5">Sign In</a>
+                        <a href="{{ route('register') }}" class="btn-brand !py-2.5">Get Started</a>
+                    </div>
                 @endauth
             </div>
         </div>
@@ -198,98 +224,91 @@
     </main>
 
     {{-- ═══════════════════════════════════════════════════════
-         FOOTER – Elegant dark footer
+         FOOTER – Full on every page; the home page keeps only
+         the trust badges and copyright (it ends with its own story)
     ═══════════════════════════════════════════════════════ --}}
-    <footer class="bg-brand-dark text-gray-300 mt-auto">
+    @php $fullFooter = ! request()->routeIs('story'); @endphp
+    <footer class="bg-brand-dark text-cream-200 mt-auto">
         {{-- Top wave decoration --}}
-        <div class="h-px bg-gradient-to-r from-transparent via-brand-500/40 to-transparent"></div>
+        <div class="h-px bg-gradient-to-r from-transparent via-accent-500/40 to-transparent"></div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
-                {{-- Brand Column --}}
-                <div class="lg:col-span-1">
-                    <a href="/" class="flex items-center gap-2.5 mb-5 group">
-                        <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/25">
-                            <i class="fas fa-leaf text-white text-sm"></i>
-                        </span>
-                        <span class="text-lg font-bold text-white">Hijabis Plugg</span>
-                    </a>
-                    <p class="text-sm text-gray-400 leading-relaxed mb-6">
-                        Your trusted destination for premium modest fashion. Curated collections that blend elegance with modesty.
-                    </p>
-                    <div class="flex gap-3">
-                        <a href="#" class="w-9 h-9 rounded-lg bg-white/5 hover:bg-brand-500 flex items-center justify-center text-gray-400 hover:text-white transition-all duration-300" aria-label="Facebook">
-                            <i class="fab fa-facebook-f text-sm"></i>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 {{ $fullFooter ? 'pt-16' : 'pt-6' }} pb-8">
+            @if($fullFooter)
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+                    {{-- Brand Column --}}
+                    <div class="lg:col-span-1">
+                        <a href="/" class="inline-block mb-5" aria-label="Nasaari Store home">
+                            <span class="flex items-end gap-1.5">
+                                <span class="font-script text-5xl leading-none text-brand-ivory">Nasaari</span>
+                                <span class="mb-1 text-xs tracking-[0.2em] uppercase text-brand-ivory/80">Store</span>
+                            </span>
+                            <span class="block mt-2 font-serif text-sm text-brand-ivory/70">Hijabs | modesty &amp; more</span>
                         </a>
-                        <a href="#" class="w-9 h-9 rounded-lg bg-white/5 hover:bg-brand-500 flex items-center justify-center text-gray-400 hover:text-white transition-all duration-300" aria-label="Instagram">
-                            <i class="fab fa-instagram text-sm"></i>
-                        </a>
-                        <a href="#" class="w-9 h-9 rounded-lg bg-white/5 hover:bg-brand-500 flex items-center justify-center text-gray-400 hover:text-white transition-all duration-300" aria-label="Twitter">
-                            <i class="fab fa-twitter text-sm"></i>
-                        </a>
-                        <a href="#" class="w-9 h-9 rounded-lg bg-white/5 hover:bg-brand-500 flex items-center justify-center text-gray-400 hover:text-white transition-all duration-300" aria-label="TikTok">
-                            <i class="fab fa-tiktok text-sm"></i>
-                        </a>
+                        <p class="text-sm text-cream-200/70 leading-relaxed mb-6">
+                            Your trusted destination for premium modest fashion. Curated collections that blend elegance with modesty.
+                        </p>
+                        <x-social-links />
                     </div>
-                </div>
 
-                {{-- Shop Links --}}
-                <div>
-                    <h4 class="text-sm font-semibold text-white uppercase tracking-wider mb-5">Shop</h4>
-                    <ul class="space-y-3">
-                        <li><a href="{{ route('products.index') }}" class="text-sm text-gray-400 hover:text-brand-400 transition-colors duration-200">All Products</a></li>
-                        <li><a href="{{ route('products.index') }}?sort=price_low" class="text-sm text-gray-400 hover:text-brand-400 transition-colors duration-200">Best Deals</a></li>
-                        <li><a href="{{ route('products.index') }}?sort=rating" class="text-sm text-gray-400 hover:text-brand-400 transition-colors duration-200">Top Rated</a></li>
-                        <li><a href="{{ route('products.index') }}?sort=latest" class="text-sm text-gray-400 hover:text-brand-400 transition-colors duration-200">New Arrivals</a></li>
-                    </ul>
+                    @php
+                        $footerLinks = [
+                            'Shop' => [
+                                ['All Products', route('products.index')],
+                                ['Best Deals', route('products.index') . '?sort=price_low'],
+                                ['Top Rated', route('products.index') . '?sort=rating'],
+                                ['New Arrivals', route('products.index') . '?sort=latest'],
+                                ['Blog & Tips', route('blog.index')],
+                            ],
+                            'Customer' => [
+                                ['Track Order', route('orders.track')],
+                                ['Returns & Exchanges', route('pages.returns-exchanges')],
+                                ['Size Guide', route('pages.size-guide')],
+                                ['Contact Support', route('pages.contact')],
+                            ],
+                            'Legal' => [
+                                ['Privacy Policy', route('pages.privacy-policy')],
+                                ['Terms of Service', '#'],
+                                ['Shipping Policy', route('pages.shipping-policy')],
+                                ['Refund Policy', route('pages.refund-policy')],
+                            ],
+                        ];
+                    @endphp
+                    @foreach($footerLinks as $heading => $links)
+                        <div>
+                            <h4 class="text-sm font-semibold text-white uppercase tracking-wider mb-5">{{ $heading }}</h4>
+                            <ul class="space-y-3">
+                                @foreach($links as [$label, $href])
+                                    <li><a href="{{ $href }}" class="text-sm text-cream-200/70 hover:text-accent-300 transition-colors duration-200">{{ $label }}</a></li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endforeach
                 </div>
-
-                {{-- Customer Links --}}
-                <div>
-                    <h4 class="text-sm font-semibold text-white uppercase tracking-wider mb-5">Customer</h4>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-sm text-gray-400 hover:text-brand-400 transition-colors duration-200">Track Order</a></li>
-                        <li><a href="{{ route('pages.returns-exchanges') }}" class="text-sm text-gray-400 hover:text-brand-400 transition-colors duration-200">Returns & Exchanges</a></li>
-                        <li><a href="{{ route('pages.size-guide') }}" class="text-sm text-gray-400 hover:text-brand-400 transition-colors duration-200">Size Guide</a></li>
-                        <li><a href="{{ route('pages.contact') }}" class="text-sm text-gray-400 hover:text-brand-400 transition-colors duration-200">Contact Support</a></li>
-                    </ul>
-                </div>
-
-                {{-- Legal Links --}}
-                <div>
-                    <h4 class="text-sm font-semibold text-white uppercase tracking-wider mb-5">Legal</h4>
-                    <ul class="space-y-3">
-                        <li><a href="{{ route('pages.privacy-policy') }}" class="text-sm text-gray-400 hover:text-brand-400 transition-colors duration-200">Privacy Policy</a></li>
-                        <li><a href="#" class="text-sm text-gray-400 hover:text-brand-400 transition-colors duration-200">Terms of Service</a></li>
-                        <li><a href="{{ route('pages.shipping-policy') }}" class="text-sm text-gray-400 hover:text-brand-400 transition-colors duration-200">Shipping Policy</a></li>
-                        <li><a href="{{ route('pages.refund-policy') }}" class="text-sm text-gray-400 hover:text-brand-400 transition-colors duration-200">Refund Policy</a></li>
-                    </ul>
-                </div>
-            </div>
+            @endif
 
             {{-- Trust badges --}}
-            <div class="flex flex-wrap items-center justify-center gap-6 py-8 border-t border-white/5 mb-8">
-                <div class="flex items-center gap-2 text-xs text-gray-500">
-                    <i class="fas fa-lock text-brand-400"></i>
+            <div class="flex flex-wrap items-center justify-center gap-6 py-8 mb-4 {{ $fullFooter ? 'border-t border-white/10' : '' }}">
+                <div class="flex items-center gap-2 text-xs text-cream-200/80">
+                    <i class="fas fa-lock text-accent-400"></i>
                     <span>Secure Payments</span>
                 </div>
-                <div class="flex items-center gap-2 text-xs text-gray-500">
-                    <i class="fas fa-truck text-brand-400"></i>
+                <div class="flex items-center gap-2 text-xs text-cream-200/80">
+                    <i class="fas fa-truck text-accent-400"></i>
                     <span>Fast Delivery</span>
                 </div>
-                <div class="flex items-center gap-2 text-xs text-gray-500">
-                    <i class="fas fa-rotate-left text-brand-400"></i>
+                <div class="flex items-center gap-2 text-xs text-cream-200/80">
+                    <i class="fas fa-rotate-left text-accent-400"></i>
                     <span>Easy Returns</span>
                 </div>
-                <div class="flex items-center gap-2 text-xs text-gray-500">
-                    <i class="fas fa-headset text-brand-400"></i>
+                <div class="flex items-center gap-2 text-xs text-cream-200/80">
+                    <i class="fas fa-headset text-accent-400"></i>
                     <span>24/7 Support</span>
                 </div>
             </div>
 
             {{-- Copyright --}}
             <div class="text-center">
-                <p class="text-xs text-gray-500">&copy; {{ date('Y') }} Hijabis Plugg. All rights reserved. Crafted with <i class="fas fa-heart text-brand-500 text-[10px]"></i> for modest fashion.</p>
+                <p class="text-xs text-cream-200/80">&copy; {{ date('Y') }} Nasaari Store. All rights reserved. Crafted with <i class="fas fa-heart text-accent-500 text-[10px]"></i> for modest fashion.</p>
             </div>
         </div>
     </footer>

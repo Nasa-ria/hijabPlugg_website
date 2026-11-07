@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +18,10 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+
+/*
+| Scheduled tasks (run `php artisan schedule:run` every minute from cron).
+| Laravel 11 reads the schedule from here; app/Console/Kernel.php is not used.
+*/
+Schedule::command('newsletter:send-scheduled')->everyMinute()->withoutOverlapping();
+Schedule::command('orders:release-unpaid')->hourly()->withoutOverlapping();

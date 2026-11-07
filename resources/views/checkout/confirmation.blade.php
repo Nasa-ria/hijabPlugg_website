@@ -30,9 +30,7 @@
                     <div>
                         <p class="text-gray-600 text-sm">Order Status</p>
                         <p class="font-bold text-lg">
-                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                                {{ ucfirst($order->status) }}
-                            </span>
+                            <x-admin.status-badge :status="$order->status" />
                         </p>
                     </div>
                     <div>
@@ -68,12 +66,15 @@
 
                             <div class="flex-1">
                                 <h3 class="font-bold">{{ $item->product->name }}</h3>
+                                @if($item->color_name)
+                                    <p class="text-gray-600">Colour: {{ $item->color_name }}</p>
+                                @endif
                                 <p class="text-gray-600">Quantity: {{ $item->quantity }}</p>
-                                <p class="text-purple-600 font-bold">₵{{ number_format($item->price, 2) }} each</p>
+                                <p class="text-brand-600 font-bold">@orderMoney($item->price) each</p>
                             </div>
 
                             <div class="text-right">
-                                <p class="font-bold text-lg">₵{{ number_format($item->subtotal, 2) }}</p>
+                                <p class="font-bold text-lg">@orderMoney($item->subtotal)</p>
                             </div>
                         </div>
                     @endforeach
@@ -86,28 +87,10 @@
             <div class="bg-white rounded-lg shadow-md p-6 sticky top-24">
                 <h2 class="text-2xl font-bold mb-6">Order Summary</h2>
 
-                <div class="space-y-3 mb-6 border-b pb-6">
-                    <div class="flex justify-between">
-                        <span>Subtotal</span>
-                        <span>₵{{ number_format($order->subtotal, 2) }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span>Shipping</span>
-                        <span>₵{{ number_format($order->shipping_cost, 2) }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span>Tax</span>
-                        <span>₵{{ number_format($order->tax, 2) }}</span>
-                    </div>
-                </div>
-
-                <div class="flex justify-between mb-6 text-xl font-bold">
-                    <span>Total</span>
-                    <span class="text-purple-600">₵{{ number_format($order->total_amount, 2) }}</span>
-                </div>
+                <x-shop.order-totals :order="$order" class="mb-6" total-class="text-xl font-bold text-brand-600" />
 
                 @if($order->payment_status !== 'paid')
-                    <a href="{{ route('payment.show', $order) }}" class="block w-full bg-purple-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-purple-700 transition text-center mb-3">
+                    <a href="{{ route('payment.show', $order) }}" class="bg-accent-500 hover:bg-accent-600 block w-full text-white px-6 py-3 rounded-lg font-bold transition text-center mb-3">
                         Complete Payment
                     </a>
                 @else
@@ -116,11 +99,11 @@
                     </div>
                 @endif
 
-                <a href="{{ route('orders.show', $order) }}" class="block w-full text-center text-purple-600 font-bold hover:underline">
+                <a href="{{ route('orders.show', $order) }}" class="block w-full text-center text-brand-600 font-bold hover:underline">
                     View Full Details
                 </a>
 
-                <a href="{{ route('products.index') }}" class="block w-full text-center text-gray-600 font-bold mt-4 hover:text-purple-600">
+                <a href="{{ route('products.index') }}" class="block w-full text-center text-gray-600 font-bold mt-4 hover:text-brand-600">
                     Continue Shopping
                 </a>
             </div>

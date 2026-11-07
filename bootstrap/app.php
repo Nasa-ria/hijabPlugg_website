@@ -16,7 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
             'signed' => \App\Http\Middleware\ValidateSignature::class,
             'admin' => \App\Http\Middleware\IsAdmin::class,
+            'admin.access' => \App\Http\Middleware\AdminAccess::class,
         ]);
+        $middleware->validateCsrfTokens(except: ['payment/webhook']);
+        $middleware->web(append: [\App\Http\Middleware\TrackPageView::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

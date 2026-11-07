@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Order Details – Hijabis Plugg')
+@section('title', 'Order Details – Nasaari Store')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
@@ -38,9 +38,9 @@
             {{-- Delivery Address --}}
             <div class="space-y-4">
                 <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                    <i class="fas fa-map-pin text-brand-500"></i>Delivery Address
+                    <i class="fas fa-map-pin text-accent-500"></i>Delivery Address
                 </h2>
-                <div class="card-panel p-8 bg-gradient-to-br from-brand-50/30 to-white border border-brand-100/50">
+                <div class="card-panel p-8 bg-gradient-to-br from-cream-100/60 to-white border border-brand-100/50">
                     <p class="text-gray-700 leading-relaxed text-[15px]">{{ $order->shipping_address }}</p>
                 </div>
             </div>
@@ -48,7 +48,7 @@
             {{-- Order Items --}}
             <div class="space-y-4">
                 <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                    <i class="fas fa-shopping-bag text-brand-500"></i>Items Ordered
+                    <i class="fas fa-shopping-bag text-accent-500"></i>Items Ordered
                 </h2>
                 <div class="space-y-3">
                     @foreach($order->items as $item)
@@ -69,19 +69,22 @@
                             {{-- Product Details --}}
                             <div class="flex-1 min-w-0">
                                 <h3 class="font-semibold text-gray-900 mb-1 line-clamp-1">{{ $item->product->name }}</h3>
+                                @if($item->color_name)
+                                    <p class="text-xs text-gray-500 mb-1">Colour: {{ $item->color_name }}</p>
+                                @endif
                                 <div class="flex flex-wrap gap-3 text-sm text-gray-600 mb-3">
                                     <span><i class="fas fa-boxes text-gray-400 mr-1"></i>Qty: <span class="font-semibold">{{ $item->quantity }}</span></span>
                                 </div>
                                 <div class="flex items-baseline justify-between">
                                     <span class="text-sm text-gray-500">Price per item</span>
-                                    <span class="font-semibold text-gray-900">₵{{ number_format($item->price, 2) }}</span>
+                                    <span class="font-semibold text-gray-900">@orderMoney($item->price)</span>
                                 </div>
                             </div>
 
                             {{-- Subtotal --}}
                             <div class="text-right flex-shrink-0">
                                 <p class="text-xs text-gray-500 mb-1">Subtotal</p>
-                                <p class="text-xl font-bold text-brand-600">₵{{ number_format($item->subtotal, 2) }}</p>
+                                <p class="text-xl font-bold text-brand-600">@orderMoney($item->subtotal)</p>
                             </div>
                         </div>
                     @endforeach
@@ -96,33 +99,16 @@
                 {{-- Order Summary --}}
                 <div class="card-panel p-8 space-y-6">
                     <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                        <i class="fas fa-calculator text-brand-500"></i>Order Summary
+                        <i class="fas fa-calculator text-accent-500"></i>Order Summary
                     </h2>
 
-                    <div class="space-y-3">
-                        <div class="flex justify-between pb-3 border-b border-gray-200">
-                            <span class="text-gray-600">Subtotal</span>
-                            <span class="font-semibold text-gray-900">₵{{ number_format($order->subtotal, 2) }}</span>
-                        </div>
-                        <div class="flex justify-between pb-3 border-b border-gray-200">
-                            <span class="text-gray-600">Shipping</span>
-                            <span class="font-semibold text-gray-900">₵{{ number_format($order->shipping_cost, 2) }}</span>
-                        </div>
-                        <div class="flex justify-between pb-3 border-b border-gray-200">
-                            <span class="text-gray-600">Tax (VAT)</span>
-                            <span class="font-semibold text-gray-900">₵{{ number_format($order->tax, 2) }}</span>
-                        </div>
-                        <div class="flex justify-between pt-3">
-                            <span class="text-lg font-bold text-gray-900">Total</span>
-                            <span class="text-2xl font-bold text-brand-600">₵{{ number_format($order->total_amount, 2) }}</span>
-                        </div>
-                    </div>
+                    <x-shop.order-totals :order="$order" />
                 </div>
 
                 {{-- Order Status --}}
                 <div class="card-panel p-8 space-y-6">
                     <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                        <i class="fas fa-info-circle text-brand-500"></i>Order Status
+                        <i class="fas fa-info-circle text-accent-500"></i>Order Status
                     </h2>
 
                     <div class="space-y-4">
@@ -130,23 +116,8 @@
                         <div class="space-y-2">
                             <p class="text-xs font-semibold uppercase tracking-widest text-gray-400">Order Status</p>
                             <div class="flex items-center gap-2">
-                                @if($order->status === 'completed')
-                                    <span class="status-chip-paid">
-                                        <i class="fas fa-check-circle text-xs mr-1.5"></i>Completed
-                                    </span>
-                                @elseif($order->status === 'pending')
-                                    <span class="status-chip-pending">
-                                        <i class="fas fa-clock text-xs mr-1.5"></i>Pending
-                                    </span>
-                                @elseif($order->status === 'cancelled')
-                                    <span class="status-chip-cancelled">
-                                        <i class="fas fa-times-circle text-xs mr-1.5"></i>Cancelled
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
-                                        <i class="fas fa-circle text-[6px]"></i>{{ ucfirst($order->status) }}
-                                    </span>
-                                @endif
+                                <x-admin.status-badge :status="$order->status" />
+                                <a href="{{ route('orders.track', ['order' => $order->order_number]) }}" class="text-xs font-semibold text-accent-700 hover:underline">Track</a>
                             </div>
                         </div>
 
@@ -191,3 +162,4 @@
         </div>
     </div>
 </div>
+@endsection

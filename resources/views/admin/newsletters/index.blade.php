@@ -3,17 +3,17 @@
 @section('page_title', 'Newsletter Campaigns')
 
 @section('content')
-<div class="bg-white rounded-lg shadow-md p-8">
+<div class="admin-card">
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
         <div>
-            <h1 class="text-3xl font-bold">Newsletter Campaigns</h1>
+            <h1 class="font-serif text-2xl text-brand-900">Newsletter Campaigns</h1>
             <p class="text-gray-500 mt-2">Create, preview, and send premium email campaigns to your subscribers.</p>
         </div>
         <div class="flex flex-wrap gap-3">
-            <a href="{{ route('admin.newsletters.subscribers') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-brand-600 text-white hover:bg-brand-700 transition">
+            <a href="{{ route('admin.newsletters.subscribers') }}" class="btn-brand">
                 <i class="fas fa-users"></i> Subscribers
             </a>
-            <a href="{{ route('admin.newsletters.create') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition">
+            <a href="{{ route('admin.newsletters.create') }}" class="btn-brand">
                 <i class="fas fa-plus"></i> New Campaign
             </a>
         </div>
@@ -32,7 +32,7 @@
             </thead>
             <tbody class="bg-white">
                 @forelse($newsletters as $newsletter)
-                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                    <tr class="border-b border-gray-100 hover:bg-cream-50 transition-colors">
                         <td class="px-4 py-5 text-gray-900 font-medium">{{ $newsletter->title }}</td>
                         <td class="px-4 py-5 text-gray-600">{{ $newsletter->subject }}</td>
                         <td class="px-4 py-5">
@@ -42,11 +42,11 @@
                         </td>
                         <td class="px-4 py-5 text-gray-500 text-sm">{{ $newsletter->created_at->format('M d, Y') }}</td>
                         <td class="px-4 py-5 space-x-2 text-sm">
-                            <a href="{{ route('admin.newsletters.preview', $newsletter) }}" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition"><i class="fas fa-eye"></i> Preview</a>
-                            <a href="{{ route('admin.newsletters.edit', $newsletter) }}" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-brand-50 text-brand-700 hover:bg-brand-100 transition"><i class="fas fa-edit"></i> Edit</a>
+                            <a href="{{ route('admin.newsletters.preview', $newsletter) }}" class="btn-secondary btn-sm"><i class="fas fa-eye"></i> Preview</a>
+                            <a href="{{ route('admin.newsletters.edit', $newsletter) }}" class="btn-secondary btn-sm"><i class="fas fa-edit"></i> Edit</a>
                             <form action="{{ route('admin.newsletters.send', $newsletter) }}" method="POST" class="inline-block">
                                 @csrf
-                                <button type="submit" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition">
+                                <button type="submit" class="btn-brand btn-sm">
                                     <i class="fas fa-paper-plane"></i>
                                     {{ $newsletter->status === 'sent' ? 'Resend' : 'Send' }}
                                 </button>

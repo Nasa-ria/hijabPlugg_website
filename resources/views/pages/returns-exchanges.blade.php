@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Returns & Exchanges - Hijabis Plugg')
+@section('title', 'Returns & Exchanges - Nasaari Store')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100 py-16">
+<div class="min-h-screen bg-gradient-to-br from-cream-100 via-cream-50 to-cream-200 py-16">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="mb-12">
             <h1 class="section-heading">Returns & Exchanges</h1>
@@ -30,7 +30,7 @@
             <section>
                 <h2 class="text-xl font-semibold text-gray-900 mb-4">3. Exchange Process</h2>
                 <ol class="list-decimal list-inside space-y-2 text-gray-600 text-sm">
-                    <li>Contact us at support@hijabisplug.com with your order number</li>
+                    <li>Contact us at support@nasaari.store with your order number</li>
                     <li>Specify the size, color, or style you'd like instead</li>
                     <li>Receive a prepaid return shipping label</li>
                     <li>Ship the original item back in original packaging</li>
@@ -71,7 +71,7 @@
 
             <section>
                 <h2 class="text-xl font-semibold text-gray-900 mb-4">Questions?</h2>
-                <p class="text-gray-600 text-sm leading-relaxed">For any questions about returns or exchanges, contact our customer service team at <a href="mailto:support@hijabisplug.com" class="text-brand-600 hover:text-brand-700 font-medium">support@hijabisplug.com</a> or call <a href="tel:+1234567890" class="text-brand-600 hover:text-brand-700 font-medium">+1 (234) 567-8900</a></p>
+                <p class="text-gray-600 text-sm leading-relaxed">For any questions about returns or exchanges, contact our customer service team at <a href="mailto:support@nasaari.store" class="text-brand-600 hover:text-brand-700 font-medium">support@nasaari.store</a> or call <a href="tel:+1234567890" class="text-brand-600 hover:text-brand-700 font-medium">+1 (234) 567-8900</a></p>
             </section>
         </div>
     </div>

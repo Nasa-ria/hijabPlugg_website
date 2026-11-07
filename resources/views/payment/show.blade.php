@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Secure Payment – Hijabis Plugg')
+@section('title', 'Secure Payment – Nasaari Store')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
@@ -26,7 +26,7 @@
             {{-- Order Summary Section --}}
             <div class="space-y-4">
                 <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                    <i class="fas fa-receipt text-brand-500"></i>Order Summary
+                    <i class="fas fa-receipt text-accent-500"></i>Order Summary
                 </h2>
                 <div class="bg-gray-50 rounded-2xl p-6 space-y-4">
                     <div class="flex justify-between items-center pb-4 border-b border-gray-200">
@@ -47,7 +47,7 @@
             {{-- Shipping Address Section --}}
             <div class="space-y-4">
                 <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                    <i class="fas fa-map-pin text-brand-500"></i>Delivery Address
+                    <i class="fas fa-map-pin text-accent-500"></i>Delivery Address
                 </h2>
                 <div class="card-panel bg-white p-6 border border-brand-100/50">
                     <p class="text-gray-700 leading-relaxed">{{ $order->shipping_address }}</p>
@@ -57,25 +57,10 @@
             {{-- Cost Breakdown --}}
             <div class="space-y-4">
                 <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                    <i class="fas fa-calculator text-brand-500"></i>Price Breakdown
+                    <i class="fas fa-calculator text-accent-500"></i>Price Breakdown
                 </h2>
-                <div class="bg-gray-50 rounded-2xl p-6 space-y-3">
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Subtotal</span>
-                        <span class="font-semibold text-gray-900">₵{{ number_format($order->subtotal, 2) }}</span>
-                    </div>
-                    <div class="flex justify-between pb-3 border-b border-gray-200">
-                        <span class="text-gray-600">Shipping</span>
-                        <span class="font-semibold text-gray-900">₵{{ number_format($order->shipping_cost, 2) }}</span>
-                    </div>
-                    <div class="flex justify-between pb-3 border-b border-gray-200">
-                        <span class="text-gray-600">Tax (VAT)</span>
-                        <span class="font-semibold text-gray-900">₵{{ number_format($order->tax, 2) }}</span>
-                    </div>
-                    <div class="flex justify-between pt-3">
-                        <span class="text-lg font-bold text-gray-900">Total Amount</span>
-                        <span class="text-2xl font-bold text-brand-600">₵{{ number_format($order->total_amount, 2) }}</span>
-                    </div>
+                <div class="bg-gray-50 rounded-2xl p-6">
+                    <x-shop.order-totals :order="$order" />
                 </div>
             </div>
 
@@ -94,8 +79,8 @@
                     <p class="text-xs text-gray-600 font-medium">Verified</p>
                 </div>
                 <div class="text-center">
-                    <div class="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center mx-auto mb-2">
-                        <i class="fas fa-shield-halved text-brand-500 text-sm"></i>
+                    <div class="w-10 h-10 rounded-lg bg-accent-50 flex items-center justify-center mx-auto mb-2">
+                        <i class="fas fa-shield-halved text-accent-500 text-sm"></i>
                     </div>
                     <p class="text-xs text-gray-600 font-medium">Secure</p>
                 </div>
@@ -107,41 +92,49 @@
             <div class="sticky top-20 card-panel p-8 space-y-6">
                 
                 {{-- Payment Amount Highlight --}}
-                <div class="text-center py-6 bg-gradient-to-br from-brand-50 to-brand-100/50 rounded-2xl border border-brand-100">
+                <div class="text-center py-6 bg-gradient-to-br from-cream-100 to-cream-200/60 rounded-2xl border border-brand-100">
                     <p class="text-sm text-gray-600 mb-2">Amount Due</p>
-                    <p class="text-4xl font-bold text-brand-600">₵{{ number_format($order->total_amount, 2) }}</p>
+                    <p class="text-4xl font-bold text-brand-600">@ghs($order->total_amount)</p>
+                    @if($displayCurrency->isConverted())
+                        <p class="mt-1 text-sm text-gray-500">about @orderMoney($order->total_amount)</p>
+                        <p class="mt-2 px-4 text-xs text-gray-500">Paystack charges in Ghana Cedis. Your bank converts it to your card's currency.</p>
+                    @endif
                 </div>
 
                 {{-- Payment Button --}}
-                <form action="{{ route('payment.initiate', $order) }}" method="POST">
+                @unless($paystackReady)
+                    <p class="rounded-xl bg-amber-50 p-4 text-sm text-amber-800 ring-1 ring-inset ring-amber-200">Online payment isn't switched on yet. Please contact us to complete your order.</p>
+                @endunless
+                <form action="{{ route('payment.initiate', $order) }}" method="POST" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button span').textContent = 'Connecting to Paystack…';">
                     @csrf
                     <button type="submit" class="btn-brand w-full py-4 text-lg font-semibold">
-                        <i class="fas fa-credit-card mr-2 text-base"></i>
-                        Proceed to Paystack
+                        <i class="fas fa-lock mr-2 text-base"></i>
+                        <span>Pay @ghs($order->total_amount) with Paystack</span>
                     </button>
                 </form>
 
                 {{-- Alternative Action --}}
-                <a href="{{ route('checkout') }}" class="btn-secondary w-full text-center">
-                    <i class="fas fa-arrow-left mr-2"></i>Back to Checkout
+                <a href="{{ route('cart.index') }}" class="btn-secondary w-full text-center">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to cart
                 </a>
 
                 {{-- Help Section --}}
-                <div class="bg-brand-50/50 rounded-xl p-5 border border-brand-100/50 space-y-2">
+                <div class="bg-cream-100 rounded-xl p-5 border border-cream-300 space-y-2">
                     <p class="text-xs font-semibold text-gray-700 flex items-center gap-2">
-                        <i class="fas fa-info-circle text-brand-500"></i>Need Help?
+                        <i class="fas fa-info-circle text-accent-500"></i>Need Help?
                     </p>
                     <p class="text-xs text-gray-600 leading-relaxed">
-                        If payment doesn't complete, you can return here and try again. Your order is reserved for 1 hour.
+                        If payment doesn't complete, you can return here and try again. Your items are reserved for {{ config('shop.inventory.release_unpaid_after_hours') }} hours.
                     </p>
                 </div>
 
                 {{-- Status Indicator --}}
                 <div class="flex items-center gap-2 pt-4 border-t border-gray-200">
                     <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-                    <span class="text-xs text-gray-600">Awaiting payment confirmation</span>
+                    <span class="text-xs text-gray-600">Card, mobile money and bank payments are handled securely by Paystack</span>
                 </div>
             </div>
         </div>
     </div>
 </div>
+@endsection

@@ -3,112 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - @yield('title', 'Hijabis Plugg')</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="robots" content="noindex, nofollow">
+    <title>@yield('page_title', 'Admin') – Nasaari Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Parisienne&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root {
-            --primary: #8b5cf6;
-            --primary-dark: #7c3aed;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-        }
-    </style>
+    @stack('head')
 </head>
-<body>
-    <div class="flex h-screen bg-gray-50">
-        <!-- Sidebar -->
-        <div class="w-64 bg-gray-900 text-white flex flex-col sticky top-0">
-            <div class="p-6 border-b border-gray-700">
-                <h2 class="text-2xl font-bold flex items-center gap-2">
-                    <i class="fas fa-cogs"></i>
-                    Admin Panel
-                </h2>
+<body class="font-sans antialiased bg-cream-100 text-gray-800">
+    @php
+        $nav = [
+            'Overview' => [
+                ['Dashboard', 'admin.dashboard', 'admin.dashboard', 'fa-chart-line'],
+                ['Orders', 'admin.orders.index', 'admin.orders.*', 'fa-bag-shopping'],
+                ['Messages', 'admin.messages.index', 'admin.messages.*', 'fa-envelope'],
+            ],
+            'Catalogue' => [
+                ['Products', 'admin.products.index', 'admin.products.*', 'fa-box'],
+                ['Categories', 'admin.categories.index', 'admin.categories.*', 'fa-list'],
+                ['Reviews', 'admin.reviews.index', 'admin.reviews.*', 'fa-star'],
+            ],
+            'Inventory' => [
+                ['Stock levels', 'admin.inventory.index', 'admin.inventory.index', 'fa-boxes-stacked'],
+                ['Stock history', 'admin.inventory.movements', 'admin.inventory.movements', 'fa-clock-rotate-left'],
+                ['Returns', 'admin.inventory.returns.index', 'admin.inventory.returns.*', 'fa-rotate-left'],
+                ['Excel import / export', 'admin.inventory.import', 'admin.inventory.import*', 'fa-file-excel'],
+            ],
+            'Marketing' => [
+                ['Newsletters', 'admin.newsletters.index', 'admin.newsletters.*', 'fa-envelope-open-text'],
+                ['Blog posts', 'admin.posts.index', 'admin.posts.*', 'fa-feather-pointed'],
+            ],
+            'Settings' => [
+                ['Shipping', 'admin.shipping.index', 'admin.shipping.*', 'fa-truck-fast'],
+                ['Team', 'admin.team.index', 'admin.team.*', 'fa-user-shield'],
+                ['My password', 'admin.password.edit', 'admin.password.*', 'fa-key'],
+            ],
+        ];
+
+        // Only show the pages this admin may use (area = the part after "admin." in the route name)
+        $me = auth()->user();
+        $nav = collect($nav)->map(fn ($links) => array_values(array_filter($links, function ($link) use ($me) {
+            $area = explode('.', $link[1])[1];
+
+            return $area === 'password' || $me->canAccessAdmin($area);
+        })))->filter()->all();
+        $homeRoute = $me->adminHomeRoute() ?? 'admin.password.edit';
+    @endphp
+
+    <div class="min-h-screen lg:flex">
+        {{-- Sidebar: fixed on desktop, slides in on phones --}}
+        <div id="adminSidebarBackdrop" class="fixed inset-0 z-30 bg-brand-dark/40 backdrop-blur-sm hidden lg:hidden" onclick="toggleAdminNav(false)"></div>
+        <aside id="adminSidebar" class="fixed inset-y-0 left-0 z-40 w-64 -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen bg-brand-dark text-cream-100 flex flex-col transition-transform duration-300 ease-out" aria-label="Admin navigation">
+            <div class="flex items-center justify-between px-6 py-6">
+                <a href="{{ route($homeRoute) }}" class="flex items-end gap-1.5">
+                    <span class="font-script text-4xl leading-none text-brand-ivory">Nasaari</span>
+                    <span class="mb-0.5 text-[10px] tracking-[0.25em] uppercase text-accent-300">Admin</span>
+                </a>
+                <button type="button" class="lg:hidden p-2 text-cream-200" onclick="toggleAdminNav(false)" aria-label="Close menu"><i class="fas fa-times"></i></button>
             </div>
 
-            <nav class="flex-1 overflow-y-auto p-4">
-                <a href="{{ route('admin.dashboard') }}" class="block px-4 py-3 rounded-lg mb-2 {{ request()->routeIs('admin.dashboard') ? 'bg-purple-600' : 'hover:bg-gray-800' }} transition">
-                    <i class="fas fa-chart-line mr-3"></i>Dashboard
-                </a>
-
-                <div class="mt-6">
-                    <p class="text-xs uppercase text-gray-500 font-bold px-4 mb-3">Catalog</p>
-                    <a href="{{ route('admin.products.index') }}" class="block px-4 py-3 rounded-lg mb-2 {{ request()->routeIs('admin.products.*') ? 'bg-purple-600' : 'hover:bg-gray-800' }} transition">
-                        <i class="fas fa-box mr-3"></i>Products
-                    </a>
-                    <a href="{{ route('admin.categories.index') }}" class="block px-4 py-3 rounded-lg mb-2 {{ request()->routeIs('admin.categories.*') ? 'bg-purple-600' : 'hover:bg-gray-800' }} transition">
-                        <i class="fas fa-list mr-3"></i>Categories
-                    </a>
-                </div>
-
-                <div class="mt-6">
-                    <p class="text-xs uppercase text-gray-500 font-bold px-4 mb-3">Marketing</p>
-                    <a href="{{ route('admin.newsletters.index') }}" class="block px-4 py-3 rounded-lg mb-2 {{ request()->routeIs('admin.newsletters.*') ? 'bg-purple-600' : 'hover:bg-gray-800' }} transition">
-                        <i class="fas fa-envelope-open-text mr-3"></i>Newsletters
-                    </a>
-                </div>
-
-                <div class="mt-6">
-                    <p class="text-xs uppercase text-gray-500 font-bold px-4 mb-3">Sales</p>
-                    <a href="{{ route('admin.orders.index') }}" class="block px-4 py-3 rounded-lg mb-2 {{ request()->routeIs('admin.orders.*') ? 'bg-purple-600' : 'hover:bg-gray-800' }} transition">
-                        <i class="fas fa-shopping-cart mr-3"></i>Orders
-                    </a>
-                    <a href="{{ route('admin.reviews.index') }}" class="block px-4 py-3 rounded-lg mb-2 {{ request()->routeIs('admin.reviews.*') ? 'bg-purple-600' : 'hover:bg-gray-800' }} transition">
-                        <i class="fas fa-star mr-3"></i>Reviews
-                    </a>
-                </div>
+            <nav class="flex-1 overflow-y-auto px-4 pb-6 space-y-6">
+                @foreach($nav as $group => $links)
+                    <div>
+                        <p class="px-3 mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-cream-200/50">{{ $group }}</p>
+                        @foreach($links as [$label, $route, $pattern, $icon])
+                            @php $active = request()->routeIs($pattern); @endphp
+                            <a href="{{ route($route) }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors {{ $active ? 'bg-white/10 text-white font-semibold' : 'text-cream-200/80 hover:bg-white/5 hover:text-white' }}" @if($active) aria-current="page" @endif>
+                                <i class="fas {{ $icon }} w-4 text-center {{ $active ? 'text-accent-300' : 'text-cream-200/50' }}"></i>{{ $label }}
+                                @if($route === 'admin.inventory.index' && ($lowStock = \App\Models\Product::where('is_available', true)->where('stock_quantity', '>', 0)->whereRaw('stock_quantity <= COALESCE(low_stock_threshold, ?)', [config('shop.inventory.low_stock_threshold')])->count()))
+                                    <span class="ml-auto rounded-full bg-amber-400 px-2 py-0.5 text-[11px] font-bold text-brand-900" title="Products low on stock">{{ $lowStock }}<span class="sr-only"> low on stock</span></span>
+                                @endif
+                                @if($route === 'admin.messages.index' && ($unread = \App\Models\ContactMessage::whereNull('read_at')->count()))
+                                    <span class="ml-auto rounded-full bg-accent-500 px-2 py-0.5 text-[11px] font-bold text-white">{{ $unread }}<span class="sr-only"> unread</span></span>
+                                @endif
+                            </a>
+                        @endforeach
+                    </div>
+                @endforeach
             </nav>
 
-            <div class="border-t border-gray-700 p-4">
+            <div class="border-t border-white/10 p-4 space-y-1">
+                <a href="{{ route('home') }}" target="_blank" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-cream-200/80 hover:bg-white/5 hover:text-white">
+                    <i class="fas fa-arrow-up-right-from-square w-4 text-center text-cream-200/50"></i>View store
+                </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="w-full px-4 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition flex items-center gap-2">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Logout
+                    <button type="submit" class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-cream-200/80 hover:bg-white/5 hover:text-white">
+                        <i class="fas fa-arrow-right-from-bracket w-4 text-center text-cream-200/50"></i>Sign out
                     </button>
                 </form>
             </div>
-        </div>
+        </aside>
 
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Top Bar -->
-            <div class="bg-white border-b border-gray-200 px-8 py-4 flex justify-between items-center">
-                <h1 class="text-3xl font-bold text-gray-800">@yield('page_title', 'Dashboard')</h1>
-                <div class="text-gray-600">
+        {{-- Main --}}
+        <div class="flex-1 min-w-0">
+            <header class="sticky top-0 z-20 flex items-center gap-3 border-b border-cream-300 bg-cream-100/90 backdrop-blur px-4 py-4 sm:px-8">
+                <button type="button" class="lg:hidden -ml-1 p-2 text-brand-900" onclick="toggleAdminNav(true)" aria-label="Open menu" aria-controls="adminSidebar"><i class="fas fa-bars text-lg"></i></button>
+                <h1 class="font-serif text-2xl sm:text-3xl text-brand-900 truncate">@yield('page_title', 'Dashboard')</h1>
+                <span class="ml-auto hidden sm:flex items-center gap-2 text-sm text-gray-500">
+                    <span class="flex h-8 w-8 items-center justify-center rounded-full bg-accent-500 text-xs font-bold text-white">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
                     {{ auth()->user()->name }}
-                </div>
-            </div>
+                </span>
+            </header>
 
-            <!-- Content Area -->
-            <div class="flex-1 overflow-auto p-8">
+            <main class="px-4 py-6 sm:px-8 sm:py-8">
                 @if($errors->any())
-                    <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg">
-                        <strong>Error!</strong>
-                        @foreach($errors->all() as $error)
-                            <p>{{ $error }}</p>
-                        @endforeach
+                    <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700" role="alert">
+                        @foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach
                     </div>
                 @endif
-
                 @if(session('success'))
-                    <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-lg">
-                        {{ session('success') }}
-                    </div>
+                    <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-800" role="status">{{ session('success') }}</div>
                 @endif
-
                 @if(session('error'))
-                    <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg">
-                        {{ session('error') }}
-                    </div>
+                    <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700" role="alert">{{ session('error') }}</div>
                 @endif
 
                 @yield('content')
-            </div>
+            </main>
         </div>
     </div>
+
+    <script>
+        function toggleAdminNav(open) {
+            document.getElementById('adminSidebar').classList.toggle('-translate-x-full', !open);
+            document.getElementById('adminSidebarBackdrop').classList.toggle('hidden', !open);
+        }
+    </script>
+    @stack('scripts')
 </body>
 </html>

@@ -8,29 +8,61 @@ export default {
         './resources/**/*.blade.php',
         './resources/**/*.js',
         './resources/**/*.vue',
+        './app/Models/*.php', // order status badge colours
     ],
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Outfit', 'Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Montserrat', ...defaultTheme.fontFamily.sans],
+                script: ['Parisienne', 'cursive'],
+                serif: ['"Bodoni Moda"', ...defaultTheme.fontFamily.serif],
+                // Craft section only (home page)
+                craft: ['Jost', ...defaultTheme.fontFamily.sans],
+                'craft-display': ['"Playfair Display"', ...defaultTheme.fontFamily.serif],
             },
             colors: {
+                // Brand palette: dark plum #3A1234 · bright rose #E0708A · porcelain #FAF4EF
+
+                // Plum: headings, links, dark sections
                 brand: {
-                    50: '#faf5ff',
-                    100: '#f3e8ff',
-                    200: '#e9d5ff',
-                    300: '#d8b4fe',
-                    400: '#c084fc',
-                    500: '#8b5cf6', // Amethyst base
-                    600: '#7c3aed',
-                    700: '#6d28d9', // Deep Amethyst
-                    800: '#5b21b6',
-                    900: '#4c1d95',
-                    light: '#fdfcfb', // Warm neutral light
+                    50: '#f8eef2',
+                    100: '#f0dce4',
+                    200: '#e2bccb',
+                    300: '#c993aa',
+                    400: '#a56580',
+                    500: '#7e3f62',
+                    600: '#66304f',
+                    700: '#521f43',
+                    800: '#46183b',
+                    900: '#3a1234', // Dark plum
+                    light: '#faf4ef', // Porcelain (page background)
                     gold: '#dfc980',  // Champagne gold
                     goldhover: '#c5a85c',
-                    dark: '#110c1a',  // Luxury near-black
-                }
+                    dark: '#3a1234',  // Dark plum (dark sections, footer, headings)
+                    ivory: '#faf4ef', // Porcelain text on dark plum
+                },
+                // Bright rose: buttons and icons
+                accent: {
+                    50: '#fdf2f5',
+                    100: '#fbe3ea',
+                    200: '#f7c6d3',
+                    300: '#f0a2b5',
+                    400: '#e8849c',
+                    500: '#e0708a', // Bright rose
+                    600: '#c2506b', // Deeper rose for small text and hover (readable contrast)
+                    700: '#a13d56',
+                    800: '#833247',
+                    900: '#6a2b3c',
+                },
+                // Porcelain: backgrounds and soft panels
+                cream: {
+                    50: '#fdfaf8',
+                    100: '#faf4ef', // Porcelain
+                    200: '#f3e9e2',
+                    300: '#e8d8cf',
+                    400: '#d9c0b3',
+                    500: '#c4a393',
+                },
             },
         },
     },

@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'My Orders – Hijabis Plugg')
+@section('title', 'My Orders – Nasaari Store')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
     <div class="flex flex-col gap-4 mb-10">
-        <div class="inline-flex items-center gap-2 rounded-full bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-600 shadow-sm shadow-brand-500/10">
+        <div class="inline-flex items-center gap-2 rounded-full bg-cream-200 px-4 py-2 text-sm font-semibold text-brand-700 shadow-sm shadow-brand-500/10">
             <i class="fas fa-box text-xs"></i> Order history
         </div>
         <div>
@@ -26,12 +26,12 @@
                         </div>
                         <div class="space-y-2">
                             <p class="text-sm uppercase tracking-[0.18em] text-gray-400">Total</p>
-                            <p class="text-lg font-semibold text-gray-900">₵{{ number_format($order->total_amount, 2) }}</p>
+                            <p class="text-lg font-semibold text-gray-900">@orderMoney($order->total_amount)</p>
                         </div>
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                             <div class="space-y-2">
                                 <span class="status-chip {{ $order->payment_status === 'paid' ? 'status-chip-paid' : 'status-chip-pending' }}">{{ ucfirst($order->payment_status) }}</span>
-                                <span class="status-chip {{ $order->status === 'completed' ? 'status-chip-paid' : ($order->status === 'pending' ? 'status-chip-pending' : 'status-chip-cancelled') }}">{{ ucfirst($order->status) }}</span>
+                                <x-admin.status-badge :status="$order->status" />
                             </div>
                             <a href="{{ route('orders.show', $order) }}" class="btn-secondary">View details</a>
                         </div>
@@ -45,7 +45,7 @@
         </div>
     @else
         <div class="card-panel p-10 text-center">
-            <div class="mx-auto mb-6 w-24 h-24 rounded-3xl bg-brand-50 flex items-center justify-center text-brand-500">
+            <div class="mx-auto mb-6 w-24 h-24 rounded-3xl bg-accent-50 flex items-center justify-center text-accent-500">
                 <i class="fas fa-box-open text-3xl"></i>
             </div>
             <h2 class="text-2xl font-semibold text-gray-900 mb-3">No orders yet</h2>

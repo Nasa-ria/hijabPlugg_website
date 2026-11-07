@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $campaign->subject }}</title>
     <style>
-        body { margin: 0; padding: 0; background-color: #f7f5f1; color: #333333; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        body { margin: 0; padding: 0; background-color: #faf4ef; color: #333333; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
         .container { width: 100%; max-width: 680px; margin: 0 auto; }
-        .button { display: inline-block; padding: 14px 28px; border-radius: 999px; background-color: #7f56d9; color: #ffffff !important; text-decoration: none; font-weight: 600; }
+        .button { display: inline-block; padding: 14px 28px; border-radius: 999px; background-color: #3a1234; color: #ffffff !important; text-decoration: none; font-weight: 600; }
         .hero { background-color: #ffffff; border-radius: 32px; overflow: hidden; }
         .hero-image { width: 100%; height: auto; display: block; }
         .section { background-color: #ffffff; border-radius: 28px; padding: 32px; margin-top: 16px; }
         .headline { color: #111827; font-size: 32px; line-height: 40px; font-weight: 700; margin: 0 0 16px; }
         .subheadline { color: #6b7280; font-size: 16px; line-height: 26px; margin: 0 0 24px; }
         .small-text { color: #9ca3af; font-size: 12px; line-height: 18px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
-        .product-card { border-radius: 24px; overflow: hidden; background-color: #f9f7f3; }
-        .footer-link { color: #7f56d9; text-decoration: none; }
+        .product-card { border-radius: 24px; overflow: hidden; background-color: #f3e9e2; }
+        .footer-link { color: #3a1234; text-decoration: none; }
         @media only screen and (max-width: 600px) {
             .container { padding: 0 20px; }
             .section { padding: 24px; }
@@ -32,7 +32,7 @@
                 <table width="100%" cellpadding="0" cellspacing="0" role="presentation" class="hero">
                     <tr>
                         <td style="padding: 40px 32px 24px; text-align: center;">
-                            <p class="small-text">Hijabis Plugg</p>
+                            <p class="small-text">Nasaari Store</p>
                             <h1 class="headline">{{ $campaign->title }}</h1>
                             <p class="subheadline">{{ $campaign->hero_text }}</p>
                             @if($campaign->cta_text && $campaign->cta_url)
@@ -83,8 +83,8 @@
                 <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-top: 16px; text-align: center;">
                     <tr>
                         <td style="font-size: 12px; line-height: 18px; color: #9ca3af; padding: 14px 0;">
-                            <p style="margin: 0 0 8px;">Hijabis Plugg | Elegant modest fashion for every moment.</p>
-                            <p style="margin: 0;">If you wish to unsubscribe, <a href="{{ $unsubscribeUrl }}" style="color: #7f56d9; text-decoration: none;">click here</a>.</p>
+                            <p style="margin: 0 0 8px;">Nasaari Store | Elegant modest fashion for every moment.</p>
+                            <p style="margin: 0;">If you wish to unsubscribe, <a href="{{ $unsubscribeUrl }}" style="color: #3a1234; text-decoration: none;">click here</a>.</p>
                         </td>
                     </tr>
                 </table>

@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Also created by 0001_01_01_* (Laravel 11 defaults); skip when it already exists
+        if (Schema::hasTable('password_reset_tokens')) {
+            return;
+        }
+
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
@@ -23,6 +28,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('password_reset_tokens');
+        // Dropped by the matching 0001_01_01_* migration
+
     }
 };

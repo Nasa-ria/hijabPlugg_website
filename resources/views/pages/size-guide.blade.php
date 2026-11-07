@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Size Guide - Hijabis Plugg')
+@section('title', 'Size Guide - Nasaari Store')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100 py-16">
+<div class="min-h-screen bg-gradient-to-br from-cream-100 via-cream-50 to-cream-200 py-16">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="mb-12">
             <h1 class="section-heading">Size Guide</h1>
@@ -16,7 +16,7 @@
                 <h2 class="text-xl font-semibold text-gray-900 mb-6">Hijab Sizes</h2>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
-                        <thead class="bg-brand-50">
+                        <thead class="bg-cream-200">
                             <tr>
                                 <th class="px-4 py-3 text-left font-semibold text-gray-900">Size</th>
                                 <th class="px-4 py-3 text-left font-semibold text-gray-900">Length</th>
@@ -53,7 +53,7 @@
                 <h2 class="text-xl font-semibold text-gray-900 mb-6">Clothing Sizes</h2>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
-                        <thead class="bg-brand-50">
+                        <thead class="bg-cream-200">
                             <tr>
                                 <th class="px-4 py-3 text-left font-semibold text-gray-900">Size</th>
                                 <th class="px-4 py-3 text-left font-semibold text-gray-900">XS</th>
@@ -139,7 +139,7 @@
             </div>
 
             <!-- Still Unsure -->
-            <div class="card-panel p-8 bg-brand-50">
+            <div class="card-panel p-8 bg-cream-200">
                 <h2 class="text-xl font-semibold text-gray-900 mb-3">Still Unsure About Your Size?</h2>
                 <p class="text-gray-600 text-sm mb-4 leading-relaxed">Our customer service team is happy to help! Reach out with your measurements and we'll recommend the perfect size for you.</p>
                 <a href="{{ route('pages.contact') }}" class="btn-brand inline-block">Contact Us</a>
