@@ -89,7 +89,8 @@ class ProductController extends Controller
         }
 
         $showHero = $term === '' && ! $activeCategory && $products->currentPage() === 1;
-        $heroProducts = $showHero ? $this->heroProducts() : collect();
+        // The photo collage is decorative: skipped in data-saver mode
+        $heroProducts = $showHero && ! \App\Support\DataSaver::on() ? $this->heroProducts() : collect();
 
         return view('products.index', [
             'products' => $products,

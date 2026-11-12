@@ -7,10 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
     <title>@yield('page_title', 'Admin') – Nasaari Admin</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Parisienne&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    {{-- Fonts and icons are self-hosted in app.css (resources/css/fonts.css) --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 </head>

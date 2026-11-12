@@ -47,7 +47,7 @@
                     @foreach($heroProducts as $i => $hero)
                         @php $img = $hero->variants->first()?->image ?: $hero->main_image; @endphp
                         <a href="{{ route('products.show', $hero) }}" tabindex="-1" class="shop-hero__tile shop-hero__tile--{{ $i + 1 }}">
-                            <img src="{{ asset('storage/' . $img) }}" alt="" width="600" height="750" loading="{{ $i === 0 ? 'eager' : 'lazy' }}" decoding="async">
+                            <x-responsive-img :path="$img" sizes="(min-width: 1024px) 24vw, 50vw" :widths="[320, 480, 720]" :eager="$i === 0" width="600" height="750" />
                         </a>
                     @endforeach
                 </div>

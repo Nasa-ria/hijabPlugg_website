@@ -105,6 +105,14 @@ class Order extends Model
         return $this->hasMany(InventoryMovement::class);
     }
 
+    /**
+     * Invoice / receipt number, derived from the order number (ORD-20261107… → INV-20261107…).
+     */
+    public function invoiceNumber(): string
+    {
+        return 'INV-' . preg_replace('/^ORD-/', '', $this->order_number);
+    }
+
     public function isPayOnDelivery(): bool
     {
         return $this->shipping_method === self::SHIPPING_POD;

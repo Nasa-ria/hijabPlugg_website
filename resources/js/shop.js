@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from './bootstrap';
 /**
  * Shop page: opens the product popup and handles colour, quantity and add to cart.
  *
@@ -11,7 +12,8 @@
 
 import { track } from './track';
 
-const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Data saver (html.lite) behaves like reduced motion: no scroll effects or animations
+const reducedMotion = () => document.documentElement.classList.contains('lite') || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export function initShop() {
     const grid = document.querySelector('[data-shop-grid]');
@@ -170,10 +172,17 @@ function showItemColour(item, dot) {
 
     img.dataset.showing = src;
     const name = item.querySelector('.shop-item__name')?.textContent.trim();
+    const srcset = dot.dataset.srcset || '';
+    // Preload the same size the grid will show (responsive photos: srcset + sizes)
     const next = new Image();
+    if (srcset) {
+        next.sizes = img.sizes;
+        next.srcset = srcset;
+    }
     next.src = src;
     const swap = () => {
         if (img.dataset.showing !== src) return; // pointer already moved to another colour
+        if (srcset) img.srcset = srcset; else img.removeAttribute('srcset');
         img.src = src;
         img.alt = `${name} in ${dot.dataset.colorName}`;
         img.classList.remove('is-swapping');
@@ -207,7 +216,21 @@ function setupProduct(panel) {
     const hasVariants = form.dataset.hasVariants === '1';
     let maxQty = Math.min(100, parseInt(form.dataset.stock, 10) || 1);
 
+    // Photos other than the first are only downloaded when they are about to be shown
+    const loadImage = (img) => {
+        if (!img?.dataset.src) return;
+        if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+        img.src = img.dataset.src;
+        delete img.dataset.src;
+        delete img.dataset.srcset;
+    };
+    const imageFor = (key) => images.find(img => img.dataset.stageImage === key);
+    // Start fetching when the customer points at / touches a colour or thumbnail
+    [...swatches, ...thumbs].forEach(el => ['pointerenter', 'focus', 'touchstart'].forEach(type =>
+        el.addEventListener(type, () => loadImage(imageFor(el.dataset.thumb ?? el.dataset.variantId ?? el.value)), { passive: true, once: true })));
+
     const showImage = (key) => {
+        loadImage(imageFor(key));
         images.forEach(img => img.classList.toggle('is-active', img.dataset.stageImage === key));
         thumbs.forEach(t => t.classList.toggle('is-active', t.dataset.thumb === key));
     };
@@ -296,7 +319,7 @@ function setupProduct(panel) {
         say('');
 
         try {
-            const response = await fetch(form.action, {
+            const response = await fetchWithTimeout(form.action, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
@@ -324,7 +347,9 @@ function setupProduct(panel) {
                 : 'We couldn’t add this right now. Please try again.';
             say(data?.message || fallback, 'error');
         } catch (error) {
-            say('We couldn’t reach the store. Check your connection and try again.', 'error');
+            say(error.name === 'TimeoutError'
+                ? 'Your connection is slow and this took too long. Please try again.'
+                : 'We couldn’t reach the store. Check your connection and try again.', 'error');
         }
 
         addLabel.textContent = 'Add to cart';

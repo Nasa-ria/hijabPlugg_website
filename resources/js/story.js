@@ -14,7 +14,8 @@
  * Timing and colours are CSS variables at the top of resources/css/story.css.
  */
 
-const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Data saver (html.lite) behaves like reduced motion: no scroll effects or animations
+const reducedMotion = () => document.documentElement.classList.contains('lite') || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isDesktop = () => window.matchMedia('(min-width: 768px)').matches;
 
 export function initStory() {

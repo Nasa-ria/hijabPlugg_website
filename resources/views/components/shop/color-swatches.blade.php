@@ -9,7 +9,7 @@
 @php
     $variants = $product->variants;
     $swatchStyle = fn ($v) => 'background-color: ' . $v->color_hex . ';'
-        . ($v->imagePath() ? " background-image: url('" . asset('storage/' . $v->imagePath()) . "');" : '');
+        . ($v->imagePath() ? " background-image: url('" . \App\Support\Img::url($v->imagePath(), 160) . "');" : '');
 @endphp
 
 @if($variants->isNotEmpty())
@@ -20,7 +20,8 @@
                         data-dot
                         data-variant-id="{{ $variant->id }}"
                         data-color-name="{{ $variant->color_name }}"
-                        data-image="{{ $variant->imagePath() ? asset('storage/' . $variant->imagePath()) : '' }}"
+                        data-image="{{ \App\Support\Img::url($variant->imagePath(), 480) }}"
+                        data-srcset="{{ \App\Support\Img::srcset($variant->imagePath()) }}"
                         aria-pressed="{{ $loop->first ? 'true' : 'false' }}"
                         aria-label="Show {{ $variant->color_name }}{{ $variant->inStock() ? '' : ' (sold out)' }}"
                         title="{{ $variant->color_name }}{{ $variant->inStock() ? '' : ' · sold out' }}"></button>

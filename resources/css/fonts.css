@@ -1,0 +1,59 @@
+/* ═══════════════════════════════════════════════════════
+   FONTS & ICONS – self-hosted and bundled by Vite
+   No calls to Google Fonts or a CDN: fewer connections on slow networks,
+   and the files are cached with the site's other assets.
+   A font file is only downloaded when text on the page uses it (e.g. Jost /
+   Playfair only on the story page), and font-display: swap shows text straight
+   away in a system font while the web font loads.
+   Font files are prepared by scripts/build-fonts.mjs (runs with `npm run build`).
+   ═══════════════════════════════════════════════════════ */
+
+/* Logo script */
+@import '@fontsource/parisienne/latin-400.css';
+
+/* Story page "craft" section only */
+@import '@fontsource/jost/latin-400.css';
+@import '@fontsource/jost/latin-500.css';
+@import '@fontsource/jost/latin-600.css';
+@import '@fontsource/playfair-display/latin-500.css';
+@import '@fontsource/playfair-display/latin-500-italic.css';
+
+/* Icons: only the ~110 Font Awesome icons the site uses (generated: npm run fonts) */
+@import './icons.css';
+
+/* Body text: Montserrat, one variable file for every weight (~37 KB, Latin only) */
+@font-face {
+    font-family: 'Montserrat Variable';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 900;
+    src: url(../fonts/text/montserrat-latin-wght.woff2) format('woff2-variations');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* The cedi sign on its own (~4 KB) instead of Montserrat's 70 KB extended-Latin file */
+@font-face {
+    font-family: 'Montserrat Variable';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 900;
+    src: url(../fonts/text/montserrat-cedi-wght.woff2) format('woff2-variations');
+    unicode-range: U+20B5;
+}
+
+/* Headings: Bodoni Moda with optical sizing (Latin only; it has no ₵, so prices fall back to Montserrat/serif) */
+@font-face {
+    font-family: 'Bodoni Moda Variable';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400 900;
+    src: url(../fonts/text/bodoni-moda-latin-opsz.woff2) format('woff2-variations');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: 'Bodoni Moda Variable';
+    font-style: italic;
+    font-display: swap;
+    font-weight: 400 900;
+    src: url(../fonts/text/bodoni-moda-latin-opsz-italic.woff2) format('woff2-variations');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}

@@ -130,7 +130,7 @@
                     @foreach($cart as $item)
                         <div class="flex items-center gap-4 rounded-3xl border border-gray-100 bg-white p-4">
                             <div class="w-16 h-16 flex-shrink-0 rounded-3xl bg-gray-100 overflow-hidden flex items-center justify-center">
-                                <img src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover">
+                                <img src="{{ \App\Support\Img::url($item['image'], 160) }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover" loading="lazy" decoding="async">
                             </div>
                             <div class="min-w-0">
                                 <p class="text-sm font-semibold text-gray-900 truncate">{{ $item['name'] }}</p>
@@ -252,7 +252,7 @@
             form.closest('.card-panel').setAttribute('aria-busy', 'true');
 
             try {
-                const response = await fetch(form.dataset.quoteUrl, {
+                const response = await (window.fetchWithTimeout || fetch)(form.dataset.quoteUrl, {
                     method: 'POST',
                     headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
                     body: data,
@@ -277,6 +277,8 @@
                 }
                 quoted = true;
             } catch (e) {
+                if (e.name === 'TimeoutError') e.message = 'Your connection is slow and DHL took too long to answer. Please try again.';
+                else if (e instanceof TypeError) e.message = 'We couldn’t reach the store. Check your connection and try again.';
                 quoted = false;
                 amount.textContent = '';
                 status.textContent = 'No estimate yet.';

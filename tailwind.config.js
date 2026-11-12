@@ -13,9 +13,9 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Montserrat', ...defaultTheme.fontFamily.sans],
+                sans: ['"Montserrat Variable"', 'Montserrat', ...defaultTheme.fontFamily.sans],
                 script: ['Parisienne', 'cursive'],
-                serif: ['"Bodoni Moda"', ...defaultTheme.fontFamily.serif],
+                serif: ['"Bodoni Moda Variable"', '"Bodoni Moda"', ...defaultTheme.fontFamily.serif],
                 // Craft section only (home page)
                 craft: ['Jost', ...defaultTheme.fontFamily.sans],
                 'craft-display': ['"Playfair Display"', ...defaultTheme.fontFamily.serif],

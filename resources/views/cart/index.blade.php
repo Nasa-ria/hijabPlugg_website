@@ -30,7 +30,7 @@
 
                         {{-- Product Image --}}
                         <a href="{{ route('products.show', $item['product_id']) }}" class="flex-shrink-0 w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden bg-gray-100 img-zoom">
-                            <img src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover">
+                            <img src="{{ \App\Support\Img::url($item['image'], 320) }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover" loading="lazy" decoding="async">
                         </a>
 
                         {{-- Product Info --}}

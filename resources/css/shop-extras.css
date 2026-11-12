@@ -202,7 +202,7 @@
 
 /* ── Recommendation rows: swipe on phones, 4 columns from tablet ─ */
 .shop-row__header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 0.75rem; margin-bottom: 1.25rem; }
-.shop-row__title { font-family: 'Bodoni Moda', Georgia, serif; font-size: 1.6rem; line-height: 1.2; color: #3a1234; }
+.shop-row__title { font-family: 'Bodoni Moda Variable', 'Bodoni Moda', Georgia, serif; font-size: 1.6rem; line-height: 1.2; color: #3a1234; }
 .shop-row__subtitle { margin-top: 0.25rem; font-size: 0.875rem; color: #6b7280; }
 .shop-row__link { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8125rem; font-weight: 600; color: #c2506b; }
 .shop-row__link:hover { color: #a13d56; }

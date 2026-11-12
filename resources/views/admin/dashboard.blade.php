@@ -5,7 +5,7 @@
 @php
     $money = fn ($v) => '₵' . number_format($v, 2);
     $ranges = ['today' => 'Today', '7d' => '7 days', '30d' => '30 days'];
-    $productImage = fn ($p) => $p->main_image ? asset('storage/' . $p->main_image) : null;
+    $productImage = fn ($p) => $p->main_image ? \App\Support\Img::url($p->main_image, 160) : null;
     $days = max(1, (int) round($start->diffInDays($end)));
 @endphp
 
@@ -174,7 +174,7 @@
     (function () {
         if (!window.Chart) return;
         const chart = @json($chart);
-        Chart.defaults.font.family = 'Montserrat, system-ui, sans-serif';
+        Chart.defaults.font.family = '"Montserrat Variable", Montserrat, system-ui, sans-serif';
         Chart.defaults.color = '#6b7280';
         const options = (format, tick = (v) => Number(v).toLocaleString()) => ({
             responsive: true,

@@ -33,7 +33,14 @@
                                 <span class="status-chip {{ $order->payment_status === 'paid' ? 'status-chip-paid' : 'status-chip-pending' }}">{{ ucfirst($order->payment_status) }}</span>
                                 <x-admin.status-badge :status="$order->status" />
                             </div>
-                            <a href="{{ route('orders.show', $order) }}" class="btn-secondary">View details</a>
+                            <div class="flex flex-wrap gap-2">
+                                @if($order->payment_status === 'paid')
+                                    <a href="{{ route('orders.invoice.download', $order) }}" class="btn-secondary" title="Download receipt (PDF)">
+                                        <i class="fas fa-file-pdf text-xs" aria-hidden="true"></i> Receipt
+                                    </a>
+                                @endif
+                                <a href="{{ route('orders.show', $order) }}" class="btn-secondary">View details</a>
+                            </div>
                         </div>
                     </div>
                 </div>

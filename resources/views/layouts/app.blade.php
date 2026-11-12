@@ -1,23 +1,31 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+@php $dataSaver = \App\Support\DataSaver::on(); @endphp
+<html lang="en" class="scroll-smooth {{ $dataSaver ? 'lite' : '' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Nasaari Store – Your trusted online destination for premium modest fashion, hijabs, and accessories.">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="theme-color" content="#3a1234">
+    {{-- Data saver: on slow connections (2G/3G or the phone's data saver) use the lite layout.
+         Runs before anything loads; the cookie tells the server to send smaller photos next time. --}}
+    <script>
+        (function () {
+            var c = navigator.connection || {}, cookies = document.cookie;
+            var slow = !!c.saveData || /^(slow-2g|2g|3g)$/.test(c.effectiveType || '');
+            var auto = /(^|; )data_saver_auto=1/.test(cookies), choice = (cookies.match(/(^|; )data_saver=([01])/) || [])[2];
+            if (c.effectiveType && slow !== auto) document.cookie = 'data_saver_auto=' + (slow ? 1 : 0) + '; path=/; max-age=86400; samesite=lax';
+            if (choice === '1' || (choice !== '0' && slow)) document.documentElement.classList.add('lite');
+        })();
+    </script>
     <title>@yield('title', 'Nasaari Store – Hijabs | Modesty & More')</title>
     @if(file_exists(public_path('images/logo.png')))
         <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     @endif
     @stack('meta')
 
-    {{-- Google Fonts --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;1,6..96,400;1,6..96,500&family=Parisienne&display=swap" rel="stylesheet">
 
-    {{-- Font Awesome --}}
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    {{-- Fonts and icons are self-hosted in app.css (resources/css/fonts.css) --}}
 
     {{-- Vite Assets --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -306,12 +314,31 @@
                 </div>
             </div>
 
+            {{-- Data saver switch --}}
+            @php $saverChoice = \App\Support\DataSaver::choice(); @endphp
+            <form method="POST" action="{{ route('data-saver.update') }}" class="mb-5 flex flex-wrap items-center justify-center gap-2 text-xs text-cream-200/80">
+                @csrf
+                <label for="data-saver" class="inline-flex items-center gap-1.5"><i class="fas fa-signal" aria-hidden="true"></i> Data saver</label>
+                <select id="data-saver" name="mode" onchange="this.form.submit()" class="rounded-lg border border-white/20 bg-white/10 px-2 py-1 text-xs text-cream-100 focus:outline-none focus:ring-2 focus:ring-accent-400">
+                    <option value="auto" class="text-brand-900" @selected($saverChoice === null)>Automatic{{ $saverChoice === null && $dataSaver ? ' (on now)' : '' }}</option>
+                    <option value="on" class="text-brand-900" @selected($saverChoice === true)>On: smaller photos</option>
+                    <option value="off" class="text-brand-900" @selected($saverChoice === false)>Off: full quality</option>
+                </select>
+                <noscript><button type="submit" class="underline">Save</button></noscript>
+            </form>
+
             {{-- Copyright --}}
             <div class="text-center">
                 <p class="text-xs text-cream-200/80">&copy; {{ date('Y') }} Nasaari Store. All rights reserved. Crafted with <i class="fas fa-heart text-accent-500 text-[10px]"></i> for modest fashion.</p>
             </div>
         </div>
     </footer>
+
+    {{-- Shown when the connection drops (resources/js/app.js) --}}
+    <div id="offline-notice" class="fixed inset-x-3 bottom-3 z-[60] mx-auto hidden max-w-md items-center gap-3 rounded-2xl bg-brand-dark px-4 py-3 text-sm text-cream-100 shadow-2xl sm:inset-x-auto sm:right-5" role="status" aria-live="polite">
+        <i class="fas fa-wifi text-accent-300" aria-hidden="true"></i>
+        <span data-offline-text>You're offline. Your cart is saved; we'll carry on when you're back online.</span>
+    </div>
 
     {{-- ═══════════════════════════════════════════════════════
          SCRIPTS

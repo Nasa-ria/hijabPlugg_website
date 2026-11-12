@@ -25,7 +25,7 @@
         <div class="shop-modal__gallery">
             <div class="shop-modal__stage">
                 @forelse($stage as $i => $img)
-                    <img src="{{ asset('storage/' . $img['path']) }}" alt="{{ $img['alt'] }}" width="800" height="1000"
+                    <img {{ $i === 0 ? 'src' : 'data-src' }}="{{ \App\Support\Img::url($img['path'], 720) }}" {{ $i === 0 ? 'srcset' : 'data-srcset' }}="{{ \App\Support\Img::srcset($img['path'], [480, 720, 960]) }}" sizes="(min-width: 768px) 420px, 92vw" alt="{{ $img['alt'] }}" width="800" height="1000"
                          decoding="async" data-stage-image="{{ $img['key'] }}" class="{{ $i === 0 ? 'is-active' : '' }}">
                 @empty
                     <span class="flex h-full w-full items-center justify-center text-accent-300" aria-hidden="true"><i class="fas fa-image text-4xl"></i></span>
@@ -36,7 +36,7 @@
                 <div class="mt-3 flex gap-2" aria-label="More photos">
                     @foreach($stage as $i => $img)
                         <button type="button" class="shop-thumb {{ $i === 0 ? 'is-active' : '' }}" data-thumb="{{ $img['key'] }}" aria-label="Show photo {{ $i + 1 }}">
-                            <img src="{{ asset('storage/' . $img['path']) }}" alt="" width="80" height="100" loading="lazy">
+                            <img src="{{ \App\Support\Img::url($img['path'], 160) }}" alt="" width="80" height="100" loading="lazy" decoding="async">
                         </button>
                     @endforeach
                 </div>

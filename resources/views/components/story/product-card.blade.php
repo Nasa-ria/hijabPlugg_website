@@ -17,7 +17,7 @@
    class="story-card group relative block overflow-hidden rounded-[1.75rem] bg-cream-200 aspect-[4/5]">
     <span class="story-zoom absolute inset-0 block">
         @if($image)
-            <img src="{{ asset('storage/' . $image) }}" alt="{{ $product->name }}" width="600" height="750" loading="lazy" decoding="async" class="h-full w-full object-cover">
+            <x-responsive-img :path="$image" :alt="$product->name" sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 80vw" width="600" height="750" class="h-full w-full object-cover" />
         @else
             <span class="flex h-full w-full items-center justify-center"><i class="fas fa-image text-3xl text-accent-300" aria-hidden="true"></i></span>
         @endif

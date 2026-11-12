@@ -61,6 +61,7 @@
                     <th scope="col" class="px-5 py-3.5 font-semibold text-right">Total</th>
                     <th scope="col" class="px-5 py-3.5 font-semibold">Payment</th>
                     <th scope="col" class="px-5 py-3.5 font-semibold">Status</th>
+                    <th scope="col" class="px-5 py-3.5 font-semibold"><span class="sr-only">Invoice</span></th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-cream-200">
@@ -73,9 +74,14 @@
                         <td class="px-5 py-4 text-right font-semibold text-brand-900">{{ $money($order->total_amount) }}</td>
                         <td class="px-5 py-4"><x-admin.payment-badge :status="$order->payment_status" /></td>
                         <td class="px-5 py-4"><x-admin.status-badge :status="$order->status" /></td>
+                        <td class="px-5 py-4 text-right" onclick="event.stopPropagation()">
+                            <a href="{{ route('admin.orders.invoice.download', $order) }}" class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 hover:bg-cream-200 hover:text-brand-900" title="Download {{ $order->payment_status === 'paid' ? 'receipt' : 'invoice' }} (PDF)" aria-label="Download invoice for {{ $order->order_number }}">
+                                <i class="fas fa-file-pdf" aria-hidden="true"></i>
+                            </a>
+                        </td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="px-5 py-12 text-center text-gray-500">No orders match these filters.</td></tr>
+                    <tr><td colspan="8" class="px-5 py-12 text-center text-gray-500">No orders match these filters.</td></tr>
                 @endforelse
             </tbody>
         </table>

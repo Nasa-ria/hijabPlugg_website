@@ -17,8 +17,9 @@
     <button type="button" class="shop-item__trigger" data-product-open="{{ $product->id }}" aria-haspopup="dialog">
         <span class="shop-item__media">
             @if($image)
-                <img src="{{ asset('storage/' . $image) }}" alt="{{ $product->name }}{{ $variants->isNotEmpty() ? ' in ' . $variants->first()->color_name : '' }}" width="800" height="1000" data-item-image
-                     loading="{{ $index < 5 ? 'eager' : 'lazy' }}" decoding="async">
+                <x-responsive-img :path="$image" :alt="$product->name . ($variants->isNotEmpty() ? ' in ' . $variants->first()->color_name : '')"
+                     sizes="(min-width: 1440px) 18vw, (min-width: 1024px) 23vw, (min-width: 768px) 31vw, 48vw" :eager="$index < 4" :priority="$index === 0"
+                     width="800" height="1000" data-item-image />
             @else
                 <span class="flex h-full w-full items-center justify-center text-accent-300" aria-hidden="true"><i class="fas fa-image text-2xl"></i></span>
             @endif

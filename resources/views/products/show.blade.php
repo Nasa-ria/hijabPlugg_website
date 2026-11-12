@@ -41,8 +41,9 @@
         <div class="lg:sticky lg:top-24 self-start">
             <div class="shop-modal__stage !max-h-none rounded-2xl">
                 @forelse($stage as $i => $img)
-                    <img src="{{ asset('storage/' . $img['path']) }}" alt="{{ $img['alt'] }}" width="900" height="1125"
-                         decoding="async" {{ $i === 0 ? 'fetchpriority=high' : 'loading=lazy' }}
+                    {{-- Only the first photo downloads now; the others when chosen (data-src, see shop.js) --}}
+                    <img {{ $i === 0 ? 'src' : 'data-src' }}="{{ \App\Support\Img::url($img['path'], 720) }}" {{ $i === 0 ? 'srcset' : 'data-srcset' }}="{{ \App\Support\Img::srcset($img['path'], [480, 720, 960, 1280]) }}" sizes="(min-width: 1024px) 50vw, 92vw" alt="{{ $img['alt'] }}" width="900" height="1125"
+                         decoding="async" @if($i === 0) fetchpriority="high" @endif
                          data-stage-image="{{ $img['key'] }}" class="{{ $i === 0 ? 'is-active' : '' }}">
                 @empty
                     <span class="flex h-full w-full items-center justify-center text-accent-300" aria-hidden="true"><i class="fas fa-image text-5xl"></i></span>
@@ -54,7 +55,7 @@
                 <div class="mt-4 flex flex-wrap gap-3" aria-label="Photos">
                     @foreach($stage as $i => $img)
                         <button type="button" class="shop-thumb !w-20 {{ $i === 0 ? 'is-active' : '' }}" data-thumb="{{ $img['key'] }}" aria-label="Show {{ $img['label'] }}">
-                            <img src="{{ asset('storage/' . $img['path']) }}" alt="" width="80" height="100" loading="lazy">
+                            <img src="{{ \App\Support\Img::url($img['path'], 160) }}" alt="" width="80" height="100" loading="lazy" decoding="async">
                         </button>
                     @endforeach
                 </div>

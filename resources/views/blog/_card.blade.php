@@ -9,7 +9,7 @@
 <article class="product-card stagger-item flex flex-col">
     <a href="{{ route('blog.show', $post) }}" class="img-zoom relative block aspect-[16/10] bg-cream-200">
         @if($post->cover_image)
-            <img src="{{ asset('storage/' . $post->cover_image) }}" alt="{{ $post->title }}" class="w-full h-full object-cover">
+            <x-responsive-img :path="$post->cover_image" :alt="$post->title" sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw" class="w-full h-full object-cover" />
         @elseif($post->video_embed_url && str_contains($post->video_embed_url, 'youtube.com'))
             <img src="https://img.youtube.com/vi/{{ basename($post->video_embed_url) }}/hqdefault.jpg" alt="{{ $post->title }}" class="w-full h-full object-cover">
         @else

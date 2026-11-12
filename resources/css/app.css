@@ -1,6 +1,8 @@
+@import './fonts.css';
 @import './story.css';
 @import './shop.css';
 @import './shop-extras.css';
+@import './lite.css';
 
 @tailwind base;
 @tailwind components;
@@ -15,7 +17,7 @@
         -moz-osx-font-smoothing: grayscale;
     }
     body {
-        font-family: 'Montserrat', system-ui, sans-serif;
+        font-family: 'Montserrat Variable', 'Montserrat', system-ui, sans-serif;
     }
     ::selection {
         background-color: #e0708a;

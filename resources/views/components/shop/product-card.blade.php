@@ -14,7 +14,7 @@
 <a href="{{ route('products.show', $product) }}" class="shop-card group" style="--i: {{ $index }}" data-track-click="shop_grid" data-product-id="{{ $product->id }}">
     <span class="shop-card__media">
         @if($image)
-            <img src="{{ asset('storage/' . $image) }}" alt="{{ $product->name }}" width="600" height="750" loading="lazy" decoding="async">
+            <x-responsive-img :path="$image" :alt="$product->name" sizes="(min-width: 768px) 23vw, 46vw" width="600" height="750" />
         @else
             <span class="flex h-full w-full items-center justify-center bg-cream-200 text-accent-300" aria-hidden="true"><i class="fas fa-image text-2xl"></i></span>
         @endif

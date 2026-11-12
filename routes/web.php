@@ -48,6 +48,21 @@ Route::get('/products/{product}', [ProductController::class, 'show'])->name('pro
 // Display currency (GH₵ / US$). Prices are stored and charged in GHS; this only changes what is shown.
 Route::post('/preferences/currency', [\App\Http\Controllers\CurrencyController::class, 'update'])->name('currency.update')->middleware('throttle:30,1');
 
+// Smaller WebP copies of stored photos for slow connections (made once, then served as static files)
+Route::get('/img/{width}/{path}', [\App\Http\Controllers\ImageController::class, 'resize'])
+    ->where(['width' => '[0-9]+', 'path' => '.+'])
+    ->name('image.resize')
+    ->middleware('throttle:600,1')
+    ->withoutMiddleware([
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+        \App\Http\Middleware\TrackPageView::class,
+    ]);
+
+// Data saver (lite mode) switch: on / off / automatic
+Route::post('/preferences/data-saver', [\App\Http\Controllers\ImageController::class, 'dataSaver'])->name('data-saver.update')->middleware('throttle:30,1');
+
 // Shopping Cart
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
@@ -88,6 +103,8 @@ Route::middleware('auth')->group(function () {
     // Orders
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{order}/invoice', [\App\Http\Controllers\InvoiceController::class, 'show'])->name('orders.invoice');
+    Route::get('/orders/{order}/invoice/download', [\App\Http\Controllers\InvoiceController::class, 'download'])->name('orders.invoice.download');
 });
 
 // Newsletter subscription
@@ -154,6 +171,8 @@ Route::middleware(['auth', 'admin', 'admin.access'])->prefix('admin')->name('adm
     Route::post('/orders/{order}/payment-status', [AdminOrderController::class, 'updatePaymentStatus'])->name('orders.update-payment-status');
     Route::post('/orders/{order}/history/{history}/resend', [AdminOrderController::class, 'resendEmail'])->name('orders.resend-email');
     Route::post('/orders/{order}/shipping', [AdminOrderController::class, 'updateShipping'])->name('orders.shipping');
+    Route::get('/orders/{order}/invoice', [\App\Http\Controllers\InvoiceController::class, 'show'])->name('orders.invoice');
+    Route::get('/orders/{order}/invoice/download', [\App\Http\Controllers\InvoiceController::class, 'download'])->name('orders.invoice.download');
 
     // Inventory: stock levels, history, adjustments, returns and Excel import/export
     Route::prefix('inventory')->name('inventory.')->controller(\App\Http\Controllers\Admin\InventoryController::class)->group(function () {

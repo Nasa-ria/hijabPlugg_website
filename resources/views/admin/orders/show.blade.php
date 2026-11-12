@@ -10,9 +10,12 @@
 
 @section('content')
 <div class="space-y-6">
-    <a href="{{ route('admin.orders.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-accent-700 hover:text-accent-800">
-        <i class="fas fa-arrow-left text-xs" aria-hidden="true"></i> All orders
-    </a>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <a href="{{ route('admin.orders.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-accent-700 hover:text-accent-800">
+            <i class="fas fa-arrow-left text-xs" aria-hidden="true"></i> All orders
+        </a>
+        <x-invoice-buttons :order="$order" :admin="true" size="sm" />
+    </div>
 
     <div class="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr]">
         <div class="space-y-6">
@@ -71,7 +74,7 @@
                         @php $path = $item->variant?->imagePath() ?? $item->product?->main_image; @endphp
                         <li class="flex items-center gap-4 py-4">
                             <div class="h-20 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-cream-200">
-                                @if($path)<img src="{{ asset('storage/' . $path) }}" alt="" class="h-full w-full object-cover">@endif
+                                @if($path)<img src="{{ \App\Support\Img::url($path, 160) }}" alt="" class="h-full w-full object-cover" loading="lazy">@endif
                             </div>
                             <div class="min-w-0 flex-1">
                                 <p class="font-semibold text-brand-900">{{ $item->product?->name ?? 'Deleted product' }}</p>

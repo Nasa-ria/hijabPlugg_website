@@ -36,7 +36,7 @@
                     <li class="flex items-center gap-4 py-4">
                         @php $path = $item->variant?->imagePath() ?? $item->product?->main_image; @endphp
                         @if($path)
-                            <img src="{{ asset('storage/' . $path) }}" alt="" class="h-16 w-14 rounded-lg object-cover">
+                            <img src="{{ \App\Support\Img::url($path, 160) }}" loading="lazy" decoding="async" alt="" class="h-16 w-14 rounded-lg object-cover">
                         @endif
                         <div class="flex-1 text-sm">
                             <p class="font-semibold text-brand-900">{{ $item->product?->name }}</p>

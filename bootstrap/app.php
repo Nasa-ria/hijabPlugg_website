@@ -19,6 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin.access' => \App\Http\Middleware\AdminAccess::class,
         ]);
         $middleware->validateCsrfTokens(except: ['payment/webhook']);
+        // Data-saver cookies are read by JavaScript too (no secrets in them), so they aren't encrypted
+        $middleware->encryptCookies(except: ['data_saver', 'data_saver_auto']);
         $middleware->web(append: [\App\Http\Middleware\TrackPageView::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

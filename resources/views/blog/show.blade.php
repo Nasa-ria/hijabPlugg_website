@@ -44,7 +44,7 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 mt-10">
         @if($post->video_path)
             <video controls preload="metadata" class="w-full rounded-[2rem] shadow-xl shadow-brand-500/10 bg-black"
-                   @if($post->cover_image) poster="{{ asset('storage/' . $post->cover_image) }}" @endif>
+                   @if($post->cover_image) poster="{{ \App\Support\Img::url($post->cover_image, 960) }}" @endif>
                 <source src="{{ asset('storage/' . $post->video_path) }}">
                 Your browser does not support video playback.
             </video>
@@ -54,7 +54,7 @@
                         frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         @elseif($post->cover_image)
-            <img src="{{ asset('storage/' . $post->cover_image) }}" alt="{{ $post->title }}" class="w-full rounded-[2rem] shadow-xl shadow-brand-500/10 object-cover max-h-[560px]">
+            <x-responsive-img :path="$post->cover_image" :alt="$post->title" sizes="(min-width: 1024px) 896px, 92vw" :widths="[480, 720, 960, 1280]" :width="960" :eager="true" class="w-full rounded-[2rem] shadow-xl shadow-brand-500/10 object-cover max-h-[560px]" />
         @endif
     </div>
 

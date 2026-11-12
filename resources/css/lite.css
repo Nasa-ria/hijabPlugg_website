@@ -1,0 +1,51 @@
+/* ═══════════════════════════════════════════════════════
+   DATA SAVER ("lite") – html.lite is set on slow connections,
+   when the phone asks to save data, or from the footer switch
+   (App\Support\DataSaver + the inline script in layouts/app).
+   The server also sends smaller photos in this mode.
+   ═══════════════════════════════════════════════════════ */
+
+/* System fonts: no web-font downloads at all (icons are kept: only ~13 KB) */
+html.lite body,
+html.lite .font-sans,
+html.lite .font-craft {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+html.lite .font-serif,
+html.lite .font-craft-display,
+html.lite .shop-row__title {
+    font-family: Georgia, 'Times New Roman', serif;
+}
+html.lite .font-script {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    letter-spacing: -0.02em;
+}
+
+/* No animations: everything appears straight away (saves CPU and battery on low-end phones) */
+html.lite *,
+html.lite *::before,
+html.lite *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+}
+
+/* Decorative extras that cost data but carry no information */
+html.lite .shop-hero__collage,
+html.lite .animate-float,
+html.lite [data-decorative] {
+    display: none !important;
+}
+html.lite .shop-hero__copy { max-width: 42rem; }
+
+/* Blur effects are expensive to draw on low-end phones */
+html.lite .backdrop-blur,
+html.lite .backdrop-blur-sm,
+html.lite .backdrop-blur-xl {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+}
+html.lite #mainNav { background-color: #fff; }

@@ -11,9 +11,12 @@
             <h1 class="section-heading">Order Details</h1>
             <p class="section-subheading">Track your order and view complete information.</p>
         </div>
-        <a href="{{ route('orders.index') }}" class="btn-secondary text-sm hidden sm:inline-flex">
-            <i class="fas fa-arrow-left"></i> Back to Orders
-        </a>
+        <div class="flex flex-wrap items-center justify-end gap-2">
+            <x-invoice-buttons :order="$order" size="sm" />
+            <a href="{{ route('orders.index') }}" class="btn-secondary text-sm hidden sm:inline-flex">
+                <i class="fas fa-arrow-left"></i> Back to Orders
+            </a>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-8">
@@ -56,7 +59,7 @@
                             {{-- Product Image --}}
                             <div class="flex-shrink-0">
                                 @if($item->product->main_image)
-                                    <img src="{{ asset('storage/' . $item->product->main_image) }}" 
+                                    <img src="{{ \App\Support\Img::url($item->product->main_image, 160) }}" loading="lazy" decoding="async" 
                                          alt="{{ $item->product->name }}" 
                                          class="w-24 h-24 object-cover rounded-xl">
                                 @else

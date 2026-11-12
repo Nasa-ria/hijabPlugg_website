@@ -4,7 +4,9 @@
 
 @php
     // Placeholder photography (Unsplash). Swap for Nasaari's own shots when ready.
-    $img = fn (string $id, int $w = 900) => "https://images.unsplash.com/photo-{$id}?auto=format&fit=crop&w={$w}&q=75";
+    // Data saver: about 60% of the width and lower quality (roughly a quarter of the bytes)
+    $lite = \App\Support\DataSaver::on();
+    $img = fn (string $id, int $w = 900) => "https://images.unsplash.com/photo-{$id}?auto=format&fit=crop&w=" . ($lite ? (int) round($w * 0.6) : $w) . '&q=' . ($lite ? 50 : 75);
     $heroImage = $img('1693985007521-e08e64770947', 1100);
 
     // Collection tiles fill the product row while the catalogue grows
@@ -18,7 +20,6 @@
 @endphp
 
 @push('meta')
-    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
     <link rel="preload" as="image" href="{{ $heroImage }}" imagesrcset="{{ $img('1693985007521-e08e64770947', 600) }} 600w, {{ $heroImage }} 1100w" imagesizes="(min-width: 1024px) 45vw, 92vw" fetchpriority="high">
     {{-- Hide reveal targets only once JS is coming; fall back to visible after 2.5s if it never runs --}}
     <script>

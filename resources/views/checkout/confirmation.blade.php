@@ -57,7 +57,7 @@
                     @foreach($order->items as $item)
                         <div class="flex gap-4 pb-4 border-b">
                             @if($item->product->main_image)
-                                <img src="{{ asset('storage/' . $item->product->main_image) }}" alt="{{ $item->product->name }}" class="w-20 h-20 object-cover rounded">
+                                <img src="{{ \App\Support\Img::url($item->product->main_image, 160) }}" loading="lazy" decoding="async" alt="{{ $item->product->name }}" class="w-20 h-20 object-cover rounded">
                             @else
                                 <div class="w-20 h-20 bg-gray-200 rounded flex items-center justify-center">
                                     <i class="fas fa-image text-gray-500"></i>
@@ -97,6 +97,7 @@
                     <div class="bg-green-50 border border-green-200 px-4 py-3 rounded-lg text-center mb-3">
                         <p class="text-green-800 font-bold">✓ Payment Received</p>
                     </div>
+                    <x-invoice-buttons :order="$order" class="mb-4 [&>a]:flex-1" />
                 @endif
 
                 <a href="{{ route('orders.show', $order) }}" class="block w-full text-center text-brand-600 font-bold hover:underline">
