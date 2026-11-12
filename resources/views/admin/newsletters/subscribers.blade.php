@@ -26,7 +26,7 @@
         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by email" class="input-field">
         <select name="status" class="input-field">
             <option value="">All statuses</option>
-            <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
+            <option value="active" {{ request('status.') === 'active' ? 'selected' : '' }}>Active</option>
             <option value="unsubscribed" {{ request('status') === 'unsubscribed' ? 'selected' : '' }}>Unsubscribed</option>
         </select>
         <button type="submit" class="btn-brand">Filter</button>
