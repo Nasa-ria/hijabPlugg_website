@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->validateCsrfTokens(except: ['payment/webhook']);
         // Data-saver cookies are read by JavaScript too (no secrets in them), so they aren't encrypted
+        // fuyy8r uyrwuer
         $middleware->encryptCookies(except: ['data_saver', 'data_saver_auto']);
         $middleware->web(append: [\App\Http\Middleware\TrackPageView::class]);
     })
