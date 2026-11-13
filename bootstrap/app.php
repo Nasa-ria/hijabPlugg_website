@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\IsAdmin::class,
             'admin.access' => \App\Http\Middleware\AdminAccess::class,
         ]);
+        // Railway terminates HTTPS at its proxy; trust its X-Forwarded-* headers so URLs are generated as https://
+        $middleware->trustProxies(at: '*');
         $middleware->validateCsrfTokens(except: ['payment/webhook']);
         // Data-saver cookies are read by JavaScript too (no secrets in them), so they aren't encrypted
         // fuyy8r uyrwuer
