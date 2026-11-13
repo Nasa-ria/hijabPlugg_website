@@ -181,7 +181,7 @@ class DashboardController extends Controller
      */
     private function bestSellers(Carbon $from, Carbon $to, int $limit = 6, ?int $categoryId = null): Collection
     {
-        // db test
+        
         $paidItems = fn () => OrderItem::query()
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
             ->where('orders.payment_status', 'paid')
