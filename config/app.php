@@ -126,6 +126,9 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    // Secret for POST /api/admin/users (Api\AdminUserController). Leave empty to turn that endpoint off.
+    'admin_api_token' => env('ADMIN_API_TOKEN'),
+
     /*
     |--------------------------------------------------------------------------
     | Maintenance Mode Driver
