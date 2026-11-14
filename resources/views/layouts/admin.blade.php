@@ -11,7 +11,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 </head>
-<body class="font-sans antialiased bg-cream-100 text-gray-800">
+<body class="admin-ui font-sans antialiased bg-cream-100 text-gray-800">
     @php
         $nav = [
             'Overview' => [

@@ -28,7 +28,7 @@ class AdminUserController extends Controller
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'email' => ['required', 'email', 'max:255'],
             'password' => ['required', 'string', Password::min(8)],
             'is_super_admin' => ['sometimes', 'boolean'],
             'admin_permissions' => ['sometimes', 'array'],
@@ -45,9 +45,12 @@ class AdminUserController extends Controller
             ], 422);
         }
 
-        $user = User::create([
+        // Existing email: update that account (also repairs a password saved unhashed by hand)
+        $user = User::firstOrNew(['email' => strtolower($data['email'])]);
+        $created = ! $user->exists;
+
+        $user->fill([
             'name' => $data['name'],
-            'email' => strtolower($data['email']),
             'password' => $data['password'], // hashed by the model's 'hashed' cast
             'role' => 'admin',
             'is_active' => true,
@@ -55,12 +58,13 @@ class AdminUserController extends Controller
             'admin_permissions' => $isSuper ? null : array_values($data['admin_permissions']),
             'must_change_password' => false,
         ]);
-        $user->forceFill(['email_verified_at' => now()])->save();
+        $user->email_verified_at ??= now();
+        $user->save();
 
         return response()->json([
-            'message' => 'Admin created.',
+            'message' => $created ? 'Admin created.' : 'Admin updated.',
             'user' => $user->only(['id', 'name', 'email', 'role', 'is_super_admin', 'admin_permissions']),
-        ], 201);
+        ], $created ? 201 : 200);
     }
 
     

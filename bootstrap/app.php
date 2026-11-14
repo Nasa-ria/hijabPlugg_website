@@ -28,5 +28,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [\App\Http\Middleware\TrackPageView::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // API routes always answer in JSON (validation errors included), even without an Accept header
+        $exceptions->shouldRenderJsonWhen(fn ($request) => $request->is('api/*') || $request->expectsJson());
     })->create();

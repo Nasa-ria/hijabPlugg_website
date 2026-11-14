@@ -18,6 +18,13 @@ class AdminUserApiTest extends TestCase
         'is_super_admin' => true,
     ];
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // The 5-per-minute limit would trip across these tests; it isn't what they check
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+    }
+
     public function test_creates_admin_with_valid_token(): void
     {
         config(['app.admin_api_token' => 'test-token']);
@@ -29,6 +36,36 @@ class AdminUserApiTest extends TestCase
         $user = User::where('email', 'new.admin@example.com')->first();
         $this->assertTrue($user->isSuperAdmin());
         $this->assertTrue(Hash::check('secret-pass-123', $user->password));
+    }
+
+    public function test_repairs_existing_user_with_plain_text_password(): void
+    {
+        config(['app.admin_api_token' => 'test-token']);
+
+        // Simulate a row typed into the database by hand: password stored as plain text
+        $id = \DB::table('users')->insertGetId([
+            'name' => 'Old', 'email' => 'new.admin@example.com', 'password' => 'plain-text',
+            'role' => 'customer', 'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        $this->withToken('test-token')->postJson('/api/admin/users', $this->payload)
+            ->assertOk()
+            ->assertJsonPath('message', 'Admin updated.');
+
+        $user = User::find($id);
+        $this->assertTrue($user->isSuperAdmin());
+        $this->assertTrue(Hash::check('secret-pass-123', $user->password));
+        $this->assertDatabaseCount('users', 1);
+    }
+
+    public function test_validation_errors_are_json_without_accept_header(): void
+    {
+        config(['app.admin_api_token' => 'test-token']);
+
+        // Plain form post, no Accept header: must not redirect to the home page
+        $this->withToken('test-token')->post('/api/admin/users', ['email' => 'not-an-email'])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['name', 'email', 'password']);
     }
 
     public function test_rejects_wrong_token(): void
