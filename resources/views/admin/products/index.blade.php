@@ -42,7 +42,7 @@
                                 <div class="flex items-center gap-4">
                                     <div class="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
                                         @if($product->main_image)
-                                            <img src="{{ asset('storage/' . $product->main_image) }}" alt="{{ $product->name }}" class="object-cover w-full h-full">
+                                            <img src="{{ \App\Support\Img::original($product->main_image) }}" alt="{{ $product->name }}" class="object-cover w-full h-full">
                                         @else
                                             <i class="fas fa-box text-gray-400"></i>
                                         @endif

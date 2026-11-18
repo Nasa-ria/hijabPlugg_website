@@ -8,7 +8,7 @@
     <meta property="og:description" content="{{ $post->excerpt ?? Str::limit(strip_tags($post->body_html), 160) }}">
     <meta property="og:url" content="{{ route('blog.show', $post) }}">
     @if($post->cover_image)
-        <meta property="og:image" content="{{ asset('storage/' . $post->cover_image) }}">
+        <meta property="og:image" content="{{ \App\Support\Img::original($post->cover_image) }}">
     @endif
     <meta name="twitter:card" content="summary_large_image">
 @endpush
@@ -45,7 +45,7 @@
         @if($post->video_path)
             <video controls preload="metadata" class="w-full rounded-[2rem] shadow-xl shadow-brand-500/10 bg-black"
                    @if($post->cover_image) poster="{{ \App\Support\Img::url($post->cover_image, 960) }}" @endif>
-                <source src="{{ asset('storage/' . $post->video_path) }}">
+                <source src="{{ \App\Support\Img::original($post->video_path) }}">
                 Your browser does not support video playback.
             </video>
         @elseif($post->video_embed_url)

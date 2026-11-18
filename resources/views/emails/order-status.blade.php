@@ -86,7 +86,7 @@
                             <tr>
                                 <td width="80" style="padding:12px 0; border-bottom:1px solid {{ $line }}; vertical-align:top;">
                                     @if($path)
-                                        <img class="item-img" src="{{ asset('storage/' . $path) }}" alt="{{ $item->product?->name }}" width="72" height="90" style="display:block; width:72px; height:90px; object-fit:cover; border-radius:8px; border:0;">
+                                        <img class="item-img" src="{{ \App\Support\Img::original($path) }}" alt="{{ $item->product?->name }}" width="72" height="90" style="display:block; width:72px; height:90px; object-fit:cover; border-radius:8px; border:0;">
                                     @endif
                                 </td>
                                 <td style="padding:12px 12px; border-bottom:1px solid {{ $line }}; vertical-align:top;">

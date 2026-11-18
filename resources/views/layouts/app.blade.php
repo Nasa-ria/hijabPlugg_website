@@ -314,19 +314,6 @@
                 </div>
             </div>
 
-            {{-- Data saver switch --}}
-            @php $saverChoice = \App\Support\DataSaver::choice(); @endphp
-            <form method="POST" action="{{ route('data-saver.update') }}" class="mb-5 flex flex-wrap items-center justify-center gap-2 text-xs text-cream-200/80">
-                @csrf
-                <label for="data-saver" class="inline-flex items-center gap-1.5"><i class="fas fa-signal" aria-hidden="true"></i> Data saver</label>
-                <select id="data-saver" name="mode" onchange="this.form.submit()" class="rounded-lg border border-white/20 bg-white/10 px-2 py-1 text-xs text-cream-100 focus:outline-none focus:ring-2 focus:ring-accent-400">
-                    <option value="auto" class="text-brand-900" @selected($saverChoice === null)>Automatic{{ $saverChoice === null && $dataSaver ? ' (on now)' : '' }}</option>
-                    <option value="on" class="text-brand-900" @selected($saverChoice === true)>On: smaller photos</option>
-                    <option value="off" class="text-brand-900" @selected($saverChoice === false)>Off: full quality</option>
-                </select>
-                <noscript><button type="submit" class="underline">Save</button></noscript>
-            </form>
-
             {{-- Copyright --}}
             <div class="text-center">
                 <p class="text-xs text-cream-200/80">&copy; {{ date('Y') }} Nasaari Store. All rights reserved. Crafted with <i class="fas fa-heart text-accent-500 text-[10px]"></i> for modest fashion.</p>

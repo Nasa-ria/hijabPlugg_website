@@ -44,7 +44,7 @@
                             @php $path = $item->variant?->imagePath() ?? $item->product?->main_image; @endphp
                             <tr>
                                 <td width="64" style="padding:10px 0; border-top:1px solid {{ $line }}; vertical-align:top;">
-                                    @if($path)<img src="{{ asset('storage/' . $path) }}" alt="" width="56" height="70" style="display:block; width:56px; height:70px; object-fit:cover; border-radius:8px; border:0;">@endif
+                                    @if($path)<img src="{{ \App\Support\Img::original($path) }}" alt="" width="56" height="70" style="display:block; width:56px; height:70px; object-fit:cover; border-radius:8px; border:0;">@endif
                                 </td>
                                 <td style="padding:10px 10px; border-top:1px solid {{ $line }}; vertical-align:top; font-size:13px; color:#4b5563;">
                                     <strong style="color:{{ $plum }}; font-size:14px;">{{ $item->product?->name ?? 'Product' }}</strong><br>

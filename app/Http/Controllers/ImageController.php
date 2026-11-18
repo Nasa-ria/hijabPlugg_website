@@ -21,7 +21,18 @@ class ImageController extends Controller
         try {
             $resized = Img::make($path, $width);
         } catch (\RuntimeException) {
-            abort(404);
+            abort(404); // missing file or not an image
+        } catch (\Throwable $e) {
+            // The server can't resize (e.g. GD extension missing): send the original instead of a broken image
+            report($e);
+
+            return redirect(Img::original($path), 302);
+        }
+
+        // Cloud bucket (Supabase in production): send the browser to the copy there
+        if (config('filesystems.disks.public.driver') !== 'local') {
+            return redirect(Storage::disk('public')->url($resized), 302)
+                ->header('Cache-Control', 'public, max-age=86400');
         }
 
         return response()->file(Storage::disk('public')->path($resized), [

@@ -47,7 +47,7 @@
                                 <div class="flex items-center gap-4">
                                     <div class="w-20 h-14 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
                                         @if($post->cover_image)
-                                            <img src="{{ asset('storage/' . $post->cover_image) }}" alt="{{ $post->title }}" class="object-cover w-full h-full">
+                                            <img src="{{ \App\Support\Img::original($post->cover_image) }}" alt="{{ $post->title }}" class="object-cover w-full h-full">
                                         @else
                                             <i class="fas fa-feather-pointed text-gray-400"></i>
                                         @endif

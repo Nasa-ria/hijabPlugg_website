@@ -52,6 +52,24 @@ class LowBandwidthTest extends TestCase
         $this->assertStringEndsWith('/storage/resized/480/products/hijab.webp', Img::url($path, 480));
     }
 
+    public function test_cloud_storage_redirects_to_the_bucket_and_skips_existence_checks(): void
+    {
+        $path = $this->photo();
+        // Pretend the public disk is a cloud bucket (Supabase in production)
+        config(['filesystems.disks.public.driver' => 's3']);
+
+        // Not made yet, and no "exists" call to the bucket: link goes through the resize route
+        $this->assertStringContainsString('/img/480/products/hijab.jpg', Img::url($path, 480));
+
+        $this->get('/img/480/products/hijab.jpg')
+            ->assertRedirect(Storage::disk('public')->url('resized/480/products/hijab.webp'));
+        Storage::disk('public')->assertExists('resized/480/products/hijab.webp');
+
+        // Remembered after it was made: linked straight to the bucket from now on
+        $this->assertSame(Storage::disk('public')->url('resized/480/products/hijab.webp'), Img::url($path, 480));
+        $this->assertSame(Storage::disk('public')->url($path), Img::original($path));
+    }
+
     public function test_small_photos_are_never_enlarged(): void
     {
         $path = $this->photo('products/small.jpg', 300, 300);
@@ -121,7 +139,7 @@ class LowBandwidthTest extends TestCase
         $this->get('/')->assertOk()
             ->assertDontSee('fonts.googleapis.com', false)
             ->assertDontSee('cdnjs.cloudflare.com', false)
-            ->assertSee('data-saver', false)
+            ->assertDontSee('id="data-saver"', false) // footer switch removed; automatic mode still works
             ->assertSee('id="offline-notice"', false);
     }
 

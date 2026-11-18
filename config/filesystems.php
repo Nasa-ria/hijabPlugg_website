@@ -36,7 +36,22 @@ return [
             'throw' => false,
         ],
 
-        'public' => [
+        // Uploaded photos/videos. In production they live in a Supabase Storage bucket (S3-compatible),
+        // because Railway's disk is wiped on every deploy. Locally (no SUPABASE_STORAGE_KEY) they stay
+        // in storage/app/public. The bucket must be marked "Public" in Supabase so the URLs work.
+        'public' => env('SUPABASE_STORAGE_KEY') ? [
+            'driver' => 's3',
+            'key' => env('SUPABASE_STORAGE_KEY'),
+            'secret' => env('SUPABASE_STORAGE_SECRET'),
+            'region' => env('SUPABASE_STORAGE_REGION', 'us-east-1'),
+            'bucket' => env('SUPABASE_STORAGE_BUCKET', 'uploads'),
+            // https://<project-ref>.supabase.co/storage/v1/s3
+            'endpoint' => env('SUPABASE_STORAGE_ENDPOINT'),
+            'use_path_style_endpoint' => true,
+            // https://<project-ref>.supabase.co/storage/v1/object/public/<bucket>
+            'url' => env('SUPABASE_STORAGE_URL'),
+            'throw' => false,
+        ] : [
             'driver' => 'local',
             'root' => storage_path('app/public'),
             'url' => env('APP_URL').'/storage',

@@ -39,7 +39,7 @@
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Hero Image</label>
                 <input type="file" name="hero_image" class="w-full">
                 @if($newsletter->hero_image_path)
-                    <img src="{{ asset('storage/' . $newsletter->hero_image_path) }}" alt="Hero" class="mt-3 rounded-xl border border-gray-200 w-full max-h-52 object-cover">
+                    <img src="{{ \App\Support\Img::original($newsletter->hero_image_path) }}" alt="Hero" class="mt-3 rounded-xl border border-gray-200 w-full max-h-52 object-cover">
                 @endif
                 @error('hero_image')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
             </div>
@@ -82,9 +82,9 @@
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Section Image</label>
                                 <input type="file" name="section_image[]" class="w-full">
                                 @if(!empty(old('existing_section_image.' . $index)))
-                                    <img src="{{ asset('storage/' . old('existing_section_image.' . $index)) }}" alt="Section" class="mt-3 rounded-xl border border-gray-200 w-full max-h-52 object-cover">
+                                    <img src="{{ \App\Support\Img::original(old('existing_section_image.' . $index)) }}" alt="Section" class="mt-3 rounded-xl border border-gray-200 w-full max-h-52 object-cover">
                                 @elseif(!empty($newsletter->content[$index]['image_path']))
-                                    <img src="{{ asset('storage/' . $newsletter->content[$index]['image_path']) }}" alt="Section" class="mt-3 rounded-xl border border-gray-200 w-full max-h-52 object-cover">
+                                    <img src="{{ \App\Support\Img::original($newsletter->content[$index]['image_path']) }}" alt="Section" class="mt-3 rounded-xl border border-gray-200 w-full max-h-52 object-cover">
                                 @endif
                                 <input type="hidden" name="existing_section_image[]" value="{{ old('existing_section_image.' . $index, $newsletter->content[$index]['image_path'] ?? '') }}">
                             </div>

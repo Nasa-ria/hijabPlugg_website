@@ -15,7 +15,7 @@
         <div class="flex flex-wrap gap-4">
             @foreach($product->images as $image)
                 <label class="flex flex-col items-center gap-2 text-sm">
-                    <img src="{{ asset('storage/' . $image->image_path) }}" alt="" class="w-24 h-28 object-cover rounded-lg ring-1 ring-black/10">
+                    <img src="{{ \App\Support\Img::original($image->image_path) }}" alt="" class="w-24 h-28 object-cover rounded-lg ring-1 ring-black/10">
                     <span class="inline-flex items-center gap-1.5 text-red-600">
                         <input type="checkbox" name="remove_images[]" value="{{ $image->id }}" class="rounded border-gray-300 text-accent-600 focus:ring-accent-500"> Remove
                     </span>

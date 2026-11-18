@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
@@ -11,7 +12,8 @@ use RuntimeException;
  * Uploaded photos are often 1–4 MB. Views ask for the size they actually display:
  *   <img src="{{ Img::url($path, 480) }}" srcset="{{ Img::srcset($path) }}" sizes="...">
  * Smaller WebP copies are made once (on first request, or with `php artisan images:optimize`)
- * in storage/app/public/resized/{width}/…webp and then served as plain static files.
+ * on the public disk under resized/{width}/…webp and then served as plain static files
+ * (from storage/app/public locally, or straight from the Supabase Storage bucket in production).
  * Originals are never changed.
  */
 class Img
@@ -33,16 +35,48 @@ class Img
             return '';
         }
         if (! self::resizable($path)) {
-            return asset('storage/' . ltrim($path, '/'));
+            return self::original($path);
         }
 
         $width = self::nearestWidth($width);
         $resized = self::resizedPath($path, $width);
 
         // Already made: link the static file directly (no PHP on later requests)
-        return Storage::disk('public')->exists($resized)
-            ? asset('storage/' . $resized)
+        return self::isMade($resized)
+            ? Storage::disk('public')->url($resized)
             : route('image.resize', ['width' => $width, 'path' => $path]);
+    }
+
+    /**
+     * Public URL of an uploaded file as stored (photos, videos), wherever the public disk keeps it.
+     */
+    public static function original(?string $path): string
+    {
+        return $path ? Storage::disk('public')->url(ltrim($path, '/')) : '';
+    }
+
+    /**
+     * Whether a resized copy exists. Remembered, so pages don't ask cloud storage about every photo
+     * on every visit; a miss just sends that one image through the resize route, which checks again.
+     */
+    private static function isMade(string $resized): bool
+    {
+        if (Cache::has('img:' . $resized)) {
+            return true;
+        }
+        // Local disk: checking is a cheap file lookup. Cloud disk: leave it to the resize route.
+        if (config('filesystems.disks.public.driver') === 'local' && Storage::disk('public')->exists($resized)) {
+            self::remember($resized);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private static function remember(string $resized): void
+    {
+        Cache::forever('img:' . $resized, true);
     }
 
     /**
@@ -98,14 +132,18 @@ class Img
         $disk = Storage::disk('public');
         $resized = self::resizedPath($path, $width);
         if ($disk->exists($resized)) {
+            self::remember($resized);
+
             return $resized;
         }
-        if (! $disk->exists($path)) {
+
+        // Read through the storage layer so this works for local files and cloud buckets alike
+        $bytes = $disk->get($path);
+        if ($bytes === null || $bytes === '') {
             throw new RuntimeException('Image not found.');
         }
 
-        $sourceFile = $disk->path($path);
-        $info = @getimagesize($sourceFile);
+        $info = @getimagesizefromstring($bytes);
         if (! $info || ! in_array($info[2], [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP, IMAGETYPE_GIF], true)) {
             throw new RuntimeException('Not an image.');
         }
@@ -116,17 +154,13 @@ class Img
             @ini_set('memory_limit', (string) $needed);
         }
 
-        $image = match ($info[2]) {
-            IMAGETYPE_JPEG => @imagecreatefromjpeg($sourceFile),
-            IMAGETYPE_PNG => @imagecreatefrompng($sourceFile),
-            IMAGETYPE_WEBP => @imagecreatefromwebp($sourceFile),
-            IMAGETYPE_GIF => @imagecreatefromgif($sourceFile),
-        };
+        $image = @imagecreatefromstring($bytes);
         if (! $image) {
             throw new RuntimeException('Image could not be read.');
         }
 
-        $image = self::orient($image, $sourceFile, $info[2]);
+        $image = self::orient($image, $bytes, $info[2]);
+        unset($bytes);
 
         // Never enlarge: a small original keeps its size (but is still compressed)
         $targetWidth = min($width, imagesx($image));
@@ -147,7 +181,8 @@ class Img
         $data = ob_get_clean();
         imagedestroy($image);
 
-        $disk->put($resized, $data);
+        $disk->put($resized, $data, ['ContentType' => 'image/webp', 'CacheControl' => 'public, max-age=31536000, immutable']);
+        self::remember($resized);
 
         return $resized;
     }
@@ -155,13 +190,13 @@ class Img
     /**
      * Phone photos are often stored sideways with an EXIF "rotate me" flag.
      */
-    private static function orient(\GdImage $image, string $file, int $type): \GdImage
+    private static function orient(\GdImage $image, string $bytes, int $type): \GdImage
     {
         if ($type !== IMAGETYPE_JPEG || ! function_exists('exif_read_data')) {
             return $image;
         }
 
-        $orientation = (int) (@exif_read_data($file)['Orientation'] ?? 1);
+        $orientation = (int) (@exif_read_data('data://image/jpeg;base64,' . base64_encode($bytes))['Orientation'] ?? 1);
         $rotated = match ($orientation) {
             3 => imagerotate($image, 180, 0),
             6 => imagerotate($image, -90, 0),

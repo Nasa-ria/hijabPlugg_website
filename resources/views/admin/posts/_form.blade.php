@@ -37,7 +37,7 @@
         @error('video_file')<p class="text-red-500 text-sm">{{ $message }}</p>@enderror
         @if($post->video_path)
             <div class="mt-3 flex items-center gap-4">
-                <video src="{{ asset('storage/' . $post->video_path) }}" controls preload="metadata" class="h-32 rounded-lg bg-black"></video>
+                <video src="{{ \App\Support\Img::original($post->video_path) }}" controls preload="metadata" class="h-32 rounded-lg bg-black"></video>
                 <label class="inline-flex items-center gap-2 text-sm text-red-600">
                     <input type="checkbox" name="remove_video" value="1" class="rounded border-gray-300 text-accent-600 focus:ring-accent-500"> Remove uploaded video
                 </label>
@@ -61,7 +61,7 @@
         <input type="file" name="cover_image" accept="image/*" class="w-full">
         @error('cover_image')<p class="text-red-500 text-sm">{{ $message }}</p>@enderror
         @if($post->cover_image)
-            <img src="{{ asset('storage/' . $post->cover_image) }}" alt="Current cover" class="mt-3 h-24 rounded-lg object-cover">
+            <img src="{{ \App\Support\Img::original($post->cover_image) }}" alt="Current cover" class="mt-3 h-24 rounded-lg object-cover">
         @endif
     </div>
     <div>

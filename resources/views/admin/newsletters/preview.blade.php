@@ -18,7 +18,7 @@
             <h2 class="text-4xl font-bold text-gray-900 mt-4">{{ $newsletter->title }}</h2>
             <p class="text-gray-600 mt-3">{{ $newsletter->hero_text }}</p>
             @if($newsletter->hero_image_path)
-                <img src="{{ asset('storage/' . $newsletter->hero_image_path) }}" alt="Hero" class="mx-auto mt-8 rounded-3xl max-w-full object-cover">
+                <img src="{{ \App\Support\Img::original($newsletter->hero_image_path) }}" alt="Hero" class="mx-auto mt-8 rounded-3xl max-w-full object-cover">
             @endif
             @if($newsletter->cta_text && $newsletter->cta_url)
                 <a href="{{ $newsletter->cta_url }}" class="btn-brand mt-8">{{ $newsletter->cta_text }}</a>
@@ -37,7 +37,7 @@
                     </div>
                     @if(!empty($section['image_path']))
                         <div>
-                            <img src="{{ asset('storage/' . $section['image_path']) }}" alt="Section image" class="rounded-3xl w-full object-cover">
+                            <img src="{{ \App\Support\Img::original($section['image_path']) }}" alt="Section image" class="rounded-3xl w-full object-cover">
                         </div>
                     @endif
                 </div>

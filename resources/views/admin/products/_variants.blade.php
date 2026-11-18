@@ -40,7 +40,7 @@
                 <div class="grid grid-cols-2 md:grid-cols-[64px_1.3fr_1.1fr_90px_100px_100px_1.2fr_80px] gap-3 items-center rounded-xl bg-cream-50 p-3">
                     <input type="hidden" name="variants[{{ $i }}][id]" value="{{ $variant->id }}">
                     <span class="w-14 h-14 rounded-full bg-gray-200 bg-cover bg-center ring-1 ring-black/10"
-                          style="background-image: url('{{ $variant->image ? asset('storage/' . $variant->image) : '' }}'); background-size: 260%;"
+                          style="background-image: url('{{ $variant->image ? \App\Support\Img::original($variant->image) : '' }}'); background-size: 260%;"
                           aria-hidden="true"></span>
                     <input type="text" name="variants[{{ $i }}][color_name]" value="{{ $variant->color_name }}" required aria-label="Colour name" class="input-field !py-2">
                     <input type="text" name="variants[{{ $i }}][sku]" value="{{ $variant->sku }}" maxlength="64" aria-label="SKU" class="input-field !py-2 font-mono text-xs">

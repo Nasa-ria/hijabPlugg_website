@@ -43,7 +43,7 @@
                     @if($campaign->hero_image_path)
                         <tr>
                             <td>
-                                <img src="{{ url('storage/' . $campaign->hero_image_path) }}" alt="Hero Banner" class="hero-image" style="display:block; width:100%; height:auto;">
+                                <img src="{{ \App\Support\Img::original($campaign->hero_image_path) }}" alt="Hero Banner" class="hero-image" style="display:block; width:100%; height:auto;">
                             </td>
                         </tr>
                     @endif
@@ -59,7 +59,7 @@
                                 <h2 style="font-size: 24px; line-height: 32px; color: #111827; margin: 0 0 16px;">{{ $section['title'] }}</h2>
                                 <p style="font-size: 16px; line-height: 26px; color: #4b5563; margin: 0 0 24px;">{{ $section['body'] }}</p>
                                 @if(!empty($section['image_path']))
-                                    <img src="{{ url('storage/' . $section['image_path']) }}" alt="Section Image" style="display:block; width:100%; height:auto; border-radius: 18px; margin-bottom: 24px;">
+                                    <img src="{{ \App\Support\Img::original($section['image_path']) }}" alt="Section Image" style="display:block; width:100%; height:auto; border-radius: 18px; margin-bottom: 24px;">
                                 @endif
                                 @if(!empty($section['button_text']) && !empty($section['button_url']))
                                     <a href="{{ $section['button_url'] }}" class="button">{{ $section['button_text'] }}</a>
